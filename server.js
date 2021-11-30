@@ -3,8 +3,12 @@ const path = require('path')
 const app = express();
 const PORT = 8000
 
-app.use(express.static(path.join(__dirname, "hub", "build")))
+// app.use(express.static(path.join(__dirname, "hub", "build")))
+
+app.get('/', (req, res) => {
+    res.send("working")
+})
 
 app.listen(PORT, () => {
-    console.log('App listen on Port' + PORT)
+    console.log('App listen on Port ' + PORT)
 })
