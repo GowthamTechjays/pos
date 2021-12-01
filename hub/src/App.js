@@ -1,25 +1,43 @@
-import logo from './logo.svg';
 import './App.css';
+import React, { useEffect } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route
+} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function App() {
+
+  useEffect(() => {
+    console.log(window.location.href)
+  })
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="hub" element={<User />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
+
+function Home() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    console.log(window.location.href)
+    // if (window.location.href == 'http://localhost:3000/') {
+    //   navigate('/hub');
+    // }
+  }, []);
+  return <h1>Manager</h1>
+}
+
+
+function User() {
+  return <h1>Hub</h1>
+}
+
 
 export default App;
