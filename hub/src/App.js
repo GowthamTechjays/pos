@@ -29,7 +29,7 @@ function Home() {
 
 
 function User() {
-  return <h1>Route</h1>
+  return <h1> Manager Route</h1>
 }
 
 
