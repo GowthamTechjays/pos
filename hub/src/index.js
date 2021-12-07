@@ -21,9 +21,9 @@ function Test() {
     var text = window.location.href
     const textSplit = text.split(",");
     if (textSplit[0] === 'http://test-devportal') {
-      setShow(false)
-    } else {
       setShow(true)
+    } else {
+      setShow(false)
     }
   }, [show])
 
