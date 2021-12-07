@@ -19,7 +19,7 @@ function Test() {
 
   useEffect(() => {
     var text = window.location.href
-    const textSplit = text.split(",");
+    const textSplit = text.split(".");
     if (textSplit[0] === 'http://test-devportal') {
       setShow(true)
     } else {
