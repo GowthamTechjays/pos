@@ -6,10 +6,11 @@ import {
   Route
 } from "react-router-dom";
 
-function App() {
+function App(props) {
 
   useEffect(() => {
-  })
+    console.log("from manager", props)
+  }, [props])
 
   return (
     <BrowserRouter>

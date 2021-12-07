@@ -5,21 +5,20 @@ import Hub from './Hub';
 class Test extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { change: '' };
+        this.state = { change: true };
     }
 
-    componentWillMount() {
-        // this.setState({ change: true })
+    componentDidMount() {
         if (window.location.href === 'http://localhost:3000/') {
-            this.setState({ change: 'false' })
-            console.log("working", this.state)
+            this.setState({ change: false })
         }
+        console.log("working", window.location.href, window.location.pathname)
     }
 
     render() {
         return (
             <div>
-                { this.state.change && this.state.change === 'false' ? (
+                { this.state.change  ? (
                     <App />
                 ) : (
                     <Hub />
