@@ -25,6 +25,7 @@ function Test() {
     } else {
       setShow(false)
     }
+    console.log(textSplit[0], show)
   }, [show])
 
   return (
