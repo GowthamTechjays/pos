@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
     BrowserRouter,
     Routes,
-    Route
+    Route,
+    useParams
 } from "react-router-dom";
 
 function Hub() {
@@ -10,21 +11,26 @@ function Hub() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="sales" element={<User />} />
+                <Route path="sales/:id" element={<User />} />
             </Routes>
         </BrowserRouter>
     )
 }
 
 function Home() {
+    const [name, setName] = useState('');
     useEffect(() => {
+        var text = window.location.href
+        const textSplit = text.split(",");
+        setName(textSplit[0])
     }, []);
-    return <h1>hub</h1>
+    return <h1> {name} - hub</h1>
 }
 
 
 function User() {
-    return <h1>sales hub route</h1>
+    let params = useParams();
+    return <h1>sales hub route id {params.id}</h1>
 }
 
 

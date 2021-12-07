@@ -8,7 +8,7 @@ import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Test />
+    <Hub />
   </React.StrictMode>,
   document.getElementById('root')
 );
@@ -16,22 +16,20 @@ ReactDOM.render(
 function Test() {
 
   const [show, setShow] = useState();
-  const [name, setName] = useState();
 
   useEffect(() => {
-    console.log(window.location.href, show)
-    if (window.location.href === 'http://localhost:3000/' || 'http://localhost:3000/sales') {
+    var text = window.location.href
+    const textSplit = text.split(",");
+    if (textSplit[0] === 'http://test-devportal') {
       setShow(false)
-      setName("manager")
     } else {
       setShow(true)
-      setName("hub")
     }
-  }, [name])
+  }, [show])
 
   return (
     <div>
-      {show && show ? <App isShow={name} /> : <Hub />}
+      {show && show ? <App /> : <Hub />}
     </div>
   )
 }

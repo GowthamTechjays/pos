@@ -1,5 +1,5 @@
 import './App.css';
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BrowserRouter,
   Routes,
@@ -30,7 +30,36 @@ function Home() {
 
 
 function User() {
-  return <h1> Manager Route</h1>
+  const [name, setName] = useState("");
+  const [descriptions, setdescriptions] = useState("");
+  const handleSubmit = (evt) => {
+    evt.preventDefault();
+    console.log(name, descriptions)
+    window.location.href = `http://${name}-devportal.cosell.partners/sales/${descriptions}`
+  }
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Domain Name
+        </label>
+        <input
+          type="text"
+          value={name}
+          onChange={e => setName(e.target.value)}
+        />
+        <label>
+          Sale no
+        </label>
+        <input
+          type="text"
+          value={descriptions}
+          onChange={e => setdescriptions(e.target.value)}
+        />
+        <input type="submit" value="Submit" />
+      </form>
+    </div>
+  )
 }
 
 
