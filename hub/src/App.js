@@ -3,7 +3,8 @@ import React, { useEffect, useState } from "react";
 import {
   BrowserRouter,
   Routes,
-  Route
+  Route,
+  useNavigate
 } from "react-router-dom";
 
 function App(props) {
@@ -23,9 +24,17 @@ function App(props) {
 }
 
 function Home() {
+  let navigate = useNavigate();
   useEffect(() => {
   }, []);
-  return <h1>Manager</h1>
+  return (
+    <div className="container">
+      <h1>Alliance Manager Portal</h1>
+      <button className="button button1" onClick={() => {
+        navigate(`/route`)
+      }}>LOG IN</button>
+    </div>
+  )
 }
 
 
