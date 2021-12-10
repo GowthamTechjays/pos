@@ -3,10 +3,10 @@ const path = require('path')
 const app = express();
 const PORT = 8000
 
-app.use(express.static(path.join(__dirname, "hub", "build")))
+app.use(express.static(path.join(__dirname, "cosell", "dist")))
 
 app.get('*', (req,res) =>{
-    res.sendFile(path.join(__dirname, "hub", "build", "index.html"));
+    res.sendFile(path.join(__dirname, "cosell", "dist", "index.html"));
 });
 
 
