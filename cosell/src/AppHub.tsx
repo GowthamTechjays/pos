@@ -1,7 +1,48 @@
+import React, { useEffect, useState } from "react";
+import {
+    BrowserRouter,
+    Switch,
+    Route,
+    useParams
+} from "react-router-dom";
+
 function AppHub() {
     return (
-        <h1>Hub</h1>
+        <BrowserRouter>
+            <Switch>
+                <Route path="/">
+                    <Home />
+                </Route>
+                <Route path="/dashboard">
+                    <Dashboard />
+                </Route>
+            </Switch>
+        </BrowserRouter>
+    )
+}
+
+function Home() {
+ const [name, setName] = useState('');
+    useEffect(() => {
+        var text = window.location.href
+        const textSplit = text.split(".");
+        setName(textSplit[0])
+    }, []);
+    return (
+        <h1>{name} - Hub</h1>
     );
 }
+
+function Dashboard() {
+    const [name, setName] = useState('');
+       useEffect(() => {
+           var text = window.location.href
+           const textSplit = text.split(".");
+           setName(textSplit[0])
+       }, []);
+       return (
+           <h1>{name} - Dashboard</h1>
+       );
+   }
 
 export default AppHub;
