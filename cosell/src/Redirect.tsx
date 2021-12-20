@@ -8,7 +8,7 @@ function Redirect() {
     useEffect(() => {
         var text = window.location.href
         const textSplit = text.split(".");
-        if (textSplit[0] === 'https://wildcarddomain') {
+        if (textSplit[0] === 'https://portal') {
             setUrl(true)
         } else {
             setUrl(false)
