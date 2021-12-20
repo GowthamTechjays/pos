@@ -18,6 +18,7 @@ import { State, uploadAssetPayload } from './types';
 
 const initialState: State = {
   errorMsg: '',
+  flag: '',
 };
 
 interface assetValues {
@@ -33,8 +34,13 @@ export const uploadAssetSlice = createSlice({
   name: 'uploadAsset',
   initialState,
   reducers: {
-    setErrMsg(state, { payload }: PayloadAction<{ errorMsg: string }>) {
+    setErrMsg(
+      state,
+      { payload }: PayloadAction<{ errorMsg: string; flag: string }>
+    ) {
       state.errorMsg = payload.errorMsg;
+      state.flag = payload.flag;
+      console.log(payload.errorMsg, payload.flag, 'inside setstae');
     },
   },
 });
@@ -48,7 +54,7 @@ export const saveAssetAction =
     updateId: string,
     partnershipId: number,
     loaderAction: () => void,
-    showAlert: () => void,
+    showAlert: (value: string, msg: string) => void,
     closeModal: () => void
   ) =>
   (dispatch: AppDispatch) => {
@@ -69,15 +75,25 @@ export const saveAssetAction =
         if (resp.result === true) {
           loaderAction();
           closeModal();
+          console.log(resp.msg, resp.result, 'inside success update');
+          dispatch(
+            setErrMsg({
+              errorMsg: resp.msg,
+              flag: resp.result.toString(),
+            })
+          );
+          showAlert('success', resp.msg);
         } else {
           closeModal();
+          console.log(resp.data.msg, resp.result, 'inside fail update');
           dispatch(
             setErrMsg({
               errorMsg: resp.data.msg,
+              flag: resp.result.toString(),
             })
           );
           loaderAction();
-          showAlert();
+          showAlert('error', resp.data.msg);
         }
       });
     } else {
@@ -88,15 +104,25 @@ export const saveAssetAction =
         if (resp.result === true) {
           loaderAction();
           closeModal();
+          console.log(resp.data.msg, resp.result, 'inside upload success');
+          dispatch(
+            setErrMsg({
+              errorMsg: resp.msg,
+              flag: resp.result.toString(),
+            })
+          );
+          showAlert('success', resp.msg);
         } else {
           closeModal();
+          console.log(resp.data.msg, resp.result, 'inside upload failure');
           dispatch(
             setErrMsg({
               errorMsg: resp.data.msg,
+              flag: resp.result.toString(),
             })
           );
           loaderAction();
-          showAlert();
+          showAlert('error', resp.data.msg);
         }
       });
     }
@@ -110,7 +136,7 @@ export const deleteAssetAction =
     setSelected: (a: string[]) => void,
     deleteModal: () => void,
     clearLoader: () => void,
-    showAlert: () => void,
+    showAlert: (value: string, msg: string) => void,
     cbFunc: () => void
   ) =>
   (dispatch: AppDispatch) => {
@@ -136,15 +162,23 @@ export const deleteAssetAction =
         setSelected(selected);
         deleteModal();
         clearLoader();
+        dispatch(
+          setErrMsg({
+            errorMsg: response.msg,
+            flag: response.result.toString(),
+          })
+        );
+        showAlert('success', response.msg);
         cbFunc();
       } else {
         clearLoader();
         dispatch(
           setErrMsg({
             errorMsg: response.data.msg,
+            flag: response.result.toString(),
           })
         );
-        showAlert();
+        showAlert('error', response.data.msg);
       }
     });
   };
@@ -159,13 +193,13 @@ export const searchAssetAction =
     accessDocTypeSearch: string,
     setTableData: (data: any) => void,
     clearLoader: () => void,
-    showAlert: () => void,
+    showAlert: (value: string, msg: string) => void,
     setCount: (data: any) => void
   ) =>
   (dispatch: AppDispatch) => {
     const token = localStorage.getItem('token');
     getRequest(
-      `partnership/asset/?partnership_id=${partnershipId}${nameSearch}${accessTypeSearch}${accessDocTypeSearch}&offset=0&limit=${limit}`,
+      `partnership/asset/?partnership_id=${partnershipId}${nameSearch}${accessTypeSearch}${accessDocTypeSearch}&offset=${offset}&limit=${limit}`,
       {
         Authorization: `Token ${token}`,
       }
@@ -184,22 +218,25 @@ export const searchAssetAction =
             return assetObj;
           });
         setTableData(updatedData);
-        setCount(response.count);
+        if (response.count) {
+          setCount(response.count);
+        }
+        // showAlert('success');
         clearLoader();
       } else {
         clearLoader();
         dispatch(
           setErrMsg({
             errorMsg: response.data.msg,
+            flag: response.result.toString(),
           })
         );
-        showAlert();
+        showAlert('error', response.data.msg);
       }
     });
   };
-
-// Selectors
+// console.log(state, ''); // Selectors
 export const selectuploadAssetResponse = (state: RootState) =>
   state.uploadAssetSlice;
-
+console.log(selectuploadAssetResponse, 'selectuploadAssetResponse');
 export default uploadAssetSlice.reducer;

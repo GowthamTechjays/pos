@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import React from 'react';
 import Loader from 'src/app/components/Loader';
 import SnackbarAlert from 'src/app/components/Snackbar/Snackbar';
+import { useHistory } from 'react-router';
 import { ForgotPasswordLabels } from '../../../strings';
 import {
   RenderTextField,
@@ -23,6 +24,7 @@ interface Values {
 }
 const ForgotPassword = () => {
   const initialValues: Values = { email: '' };
+  const history = useHistory();
   const validationSchema = Yup.object({
     email: Yup.string()
       .email('Must be a valid email')
@@ -130,6 +132,18 @@ const ForgotPassword = () => {
           >
             {ForgotPasswordLabels.resend}
           </Button>
+        </div>
+        <div className={`${styles.link} ${styles.signIn}`}>
+          <a
+            target="_blank"
+            href="https://sprint-portal.cosell.partners/"
+            // onClick={() => history.push('/')}
+            // size="small"
+            className={styles.linkBtn}
+            rel="noreferrer"
+          >
+            {ForgotPasswordLabels.signIn}
+          </a>
         </div>
       </div>
       {loading === true && <Loader />}

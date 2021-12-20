@@ -4,12 +4,10 @@
   font-family: 'Inter', sans-serif;
   font-size: 14px;
 }
-
 .contentTitle {
   font-family: 'Inter', sans-serif;
   font-size: 14px;
 }
-
 .icon {
   width: 20px;
   height: 20px;
@@ -88,22 +86,32 @@ tr:hover {
 .dropdownBtn {
   width: 90%;
   /* height: 40px; */
-  font-size: 14px;
-  line-height: 17px;
   margin-left: 5%;
   margin-top: 20px;
-  color: #192a3e80;
   border: none;
   background: #90a0b71a;
   text-align: left;
-  letter-spacing: 1.5px;
   cursor: pointer;
   padding: 10px 40px 10px 10px;
+}
+.dropdownBtnLabel {
+  color: #192a3e80;
+  font-size: 14px;
+  line-height: 17px;
+  letter-spacing: 1.5px;
   word-break: break-word;
 }
-
+.dropdownBtnLabelSelected {
+  color: #192a3e80;
+  font-size: 15px;
+  font-weight: bold;
+  line-height: 17px;
+  letter-spacing: 1.5px;
+  word-break: break-word;
+}
 .clicked {
   color: #4c70e3;
+  font-family: 'Inter', sans-serif !important;
   font-weight: 500;
 }
 

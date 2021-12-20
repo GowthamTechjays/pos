@@ -54,11 +54,13 @@ export const VerifyMailLabels = {
   spamMail: ' Spam mail',
   resend: 'Resend',
   mailReceiveLabel: 'Didn’t receive an email?',
+  signIn: 'Sign In',
 };
 export const ForgotPasswordLabels = {
   email: 'Email',
   resend: 'Resend',
   send: 'Send',
+  signIn: 'Sign In',
   mailReceiveLabel: 'Didn’t receive an email?',
   forgotPasswordLabel: 'Forgot password?',
   forgotPasswordContent:
@@ -71,6 +73,7 @@ export const ResetPasswordLabels = {
   confirmPassword: 'Confirm password',
   changePassword: 'Change password',
   signInwithNewPw: 'Sign in with your new password',
+  signIn: 'Sign In',
 };
 
 export const Sidebar = {
@@ -127,6 +130,8 @@ export const CreatePartnershipLabels = {
   partnershipName: 'Partnership name',
   websiteSubDomainName: 'Content hub website subdomain name',
   websiteSubDomainNameLabel: 'Sub domain name',
+  whitelistedDomainLabel: 'Whitelisted Domains',
+  whitelistedDomain: 'Whitelisted Domains',
 };
 
 export const CompanyInfoLabels = {
@@ -223,6 +228,7 @@ export const uploadAssetsLabels = {
   search: 'Search',
   size: 'Size',
   fileErrorMessage: 'Invalid file format !',
+  noRecords: 'No Results Found',
   confirmDeleteAsset:
     'Are you sure you want to delete the Asset? Assets mapped to any Solution Narratives will be removed',
 };
@@ -286,4 +292,39 @@ export const SolutionNarrativeLabels = {
   addAssets: 'Add assets',
   manageAssets: 'Manage assets',
   noAssetsMessage: 'No assets added to the solution narrative',
+  deleteDialogPrimaryContent: 'Delete solution narrative',
+  deleteDialogSecondaryContent:
+    'Are you sure you want to delete the solution narrative',
+  deleteDialogSecondaryButton: 'Cancel',
+  deleteDialogPrimaryButton: 'Delete',
+  deletesolNarrMsg: 'Solution narrative deleted Sucessfully',
+};
+
+export const SalesHubLabels = {
+  titleLabel: 'Sales hub',
+  previewButton: 'Preview',
+  saveButton: 'Save',
+  salesHubLayout: 'Sales hub layout',
+  headerText: 'Header text',
+  subHeaderText: 'Sub header text',
+  headerImg: 'Header image',
+  headerImgField: 'Upload Header image',
+  fontColor: 'Font color',
+  fontFamily: 'Font family',
+  solutionNarrative: 'Solution Narrative',
+  addSolutionNarrative: 'Add solution narrative',
+  addSolutionNarrativeButton: 'Add solution narrative',
+  noAssetMsg: 'No assets added to the solution narrative',
+};
+
+export const ManageSolutionNarrativeLabels = {
+  titleLabel: 'Sales hub solution narratives',
+  manageSolutionNarrative: 'Manage solution narratives',
+  addNew: 'Add New',
+  remove: 'Remove',
+  cancel: 'Cancel',
+  save: 'Save',
+  tableName: 'Name',
+  tableNoOfAssets: 'Number of assets',
+  tableTags: 'Tags',
 };

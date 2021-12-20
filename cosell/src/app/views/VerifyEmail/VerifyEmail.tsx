@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import React from 'react';
 import Loader from 'src/app/components/Loader';
+import { useHistory } from 'react-router';
 import { VerifyMailLabels } from '../../../strings';
 import { postRequest } from '../../service';
 import verifyEmail from '../../assets/mailverification.png';
@@ -16,6 +17,7 @@ import { selectSignUpResponse } from '../SignUp/SignUpSlice';
 
 const VerifyMail = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const signUpRespData = useSelector(selectSignUpResponse);
   const [loading, setLoading] = React.useState(false);
 
@@ -56,6 +58,11 @@ const VerifyMail = () => {
           <div>
             {VerifyMailLabels.checkTxt}{' '}
             <span className={styles.spam}>{VerifyMailLabels.spamMail}</span>
+          </div>
+          <div className={`${styles.link} ${styles.signIn}`}>
+            <Button size="small" onClick={() => history.push('/')}>
+              {VerifyMailLabels.signIn}
+            </Button>
           </div>
         </div>
       </div>

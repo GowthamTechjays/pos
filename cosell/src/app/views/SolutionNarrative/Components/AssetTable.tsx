@@ -1,3 +1,9 @@
+/* eslint-disable space-in-parens */
+/* eslint-disable no-mixed-operators */
+/* eslint-disable function-paren-newline */
+/* eslint-disable indent */
+/* eslint-disable react/jsx-curly-newline */
+/* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable comma-dangle */
 /* eslint-disable linebreak-style */
 /* eslint-disable implicit-arrow-linebreak */
@@ -31,6 +37,7 @@ import pdfIcon from '../../../assets/pdf_mini_icon.svg';
 import pptIcon from '../../../assets/ppt_mini_icon.svg';
 import imageIcon from '../../../assets/img_mini_icon.svg';
 import videoIcon from '../../../assets/video_mini_icon.svg';
+import reOrderIcon from '../../../assets/drag_icon.svg';
 import styles from './AssetTable.module.css';
 import {
   selectSolutionNarrativeResponse,
@@ -39,8 +46,16 @@ import {
 import { SolutionNarrativeAssetInfo } from '../types';
 
 const AssetTable = (props: any) => {
+  const {
+    selectedSolNarrId,
+    setSelectedSolNarrId,
+    selectedSolNarrativeObj,
+    setSelectedSolNarrativeObj,
+    assetData,
+  } = props;
   const dispatch = useDispatch();
   const [partnershipId, setPartnershipId] = useState('');
+
   const solutionNarrativeStoreData = useSelector(
     selectSolutionNarrativeResponse
   );
@@ -64,6 +79,61 @@ const AssetTable = (props: any) => {
       })
     );
   };
+
+  console.log(
+    selectedSolNarrId,
+    'selectedSolNarrId in table',
+    selectedSolNarrativeObj
+  );
+  const handleCheckboxClick = (
+    event: any,
+    id: number,
+    row: any // type create
+  ) => {
+    event.stopPropagation();
+    const selectedIndex = selectedSolNarrId.indexOf(id);
+    let newSelected: any[] = [];
+    let newSelectedSolNarr: any[] = [];
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selectedSolNarrId, id);
+      newSelectedSolNarr = newSelectedSolNarr.concat(
+        selectedSolNarrativeObj,
+        row
+      );
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selectedSolNarrId.slice(1));
+      newSelectedSolNarr = newSelectedSolNarr.concat(
+        selectedSolNarrativeObj.slice(1)
+      );
+    } else if (selectedIndex === selectedSolNarrId.length - 1) {
+      newSelected = newSelected.concat(selectedSolNarrId.slice(0, -1));
+      newSelectedSolNarr = newSelectedSolNarr.concat(
+        selectedSolNarrativeObj.slice(0, -1)
+      );
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selectedSolNarrId.slice(0, selectedIndex),
+        selectedSolNarrId.slice(selectedIndex + 1)
+      );
+      newSelectedSolNarr = newSelectedSolNarr.concat(
+        selectedSolNarrativeObj.slice(0, selectedIndex),
+        selectedSolNarrativeObj.slice(selectedIndex + 1)
+      );
+    }
+    setSelectedSolNarrId(newSelected);
+    setSelectedSolNarrativeObj(newSelectedSolNarr);
+    console.log(newSelectedSolNarr, newSelected, 'newww in table');
+  };
+
+  const handleSelectAllClick = (event: any) => {
+    if (event.target.checked) {
+      const selectedData = assetData.map((data: any) => data.asset_id);
+      setSelectedSolNarrId(selectedData);
+      return;
+    }
+    setSelectedSolNarrId([]);
+  };
+
   useEffect(() => {
     const queryparams = new URLSearchParams(window.location.search);
     const partnershipID: string = queryparams.get('partner_ship_id') || '0';
@@ -115,40 +185,44 @@ const AssetTable = (props: any) => {
       >
         <TableHead>
           <TableRow>
-            <StyledTableCell>{''}</StyledTableCell>
+            <StyledTableCell />
             <StyledTableCell>
               <Checkbox
+                // className={
+                //   solutionNarrativeStoreData.assetInfo.length ===
+                //   solutionNarrativeStoreData.assetInfo.filter(
+                //     (s) => s.is_selected === true
+                //   ).length
+                //     ? styles.assetCheckBox
+                //     : ''
+                // }
+                checked={
+                  assetData.length > 0 &&
+                  assetData.length ===
+                    assetData.filter((d: any) =>
+                      selectedSolNarrId.includes(d.asset_id)
+                    ).length
+                }
                 className={
-                  solutionNarrativeStoreData.assetInfo.length ===
-                  solutionNarrativeStoreData.assetInfo.filter(
-                    (s) => s.is_selected === true
-                  ).length
+                  assetData.length > 0 &&
+                  assetData.length ===
+                    assetData.filter((d: any) =>
+                      selectedSolNarrId.includes(d.asset_id)
+                    ).length
                     ? styles.assetCheckBox
                     : ''
                 }
-                checked={
-                  solutionNarrativeStoreData.assetInfo.length ===
-                  solutionNarrativeStoreData.assetInfo.filter(
-                    (s) => s.is_selected === true
-                  ).length
-                }
-                onChange={(e) => {
-                  const allSelected = solutionNarrativeStoreData.assetInfo.map(
-                    (a) => ({
-                      ...a,
-                      is_selected: e.target.checked,
-                    })
-                  );
-
-                  dispatch(
-                    setAssetInfo({
-                      assetInfo: allSelected,
-                    })
-                  );
-                }}
+                onChange={(e) => handleSelectAllClick(e)}
               />
             </StyledTableCell>
-
+            {/* {console.log(
+              assetData.length,
+              assetData.filter((d: any) =>
+                selectedSolNarrId.includes(d.asset_id)
+              ).length,
+              selectedSolNarrId,
+              'xfdsf'
+            )} */}
             <StyledTableCell>{uploadAssetsLabels.name}</StyledTableCell>
             <StyledTableCell>{uploadAssetsLabels.docType}</StyledTableCell>
             <StyledTableCell>{uploadAssetsLabels.accessType}</StyledTableCell>
@@ -162,8 +236,8 @@ const AssetTable = (props: any) => {
                 ref={droppableProvided.innerRef}
                 {...droppableProvided.droppableProps}
               >
-                {solutionNarrativeStoreData.assetInfo.length > 0 &&
-                  solutionNarrativeStoreData.assetInfo.map(
+                {assetData.length > 0 &&
+                  assetData.map(
                     (row: SolutionNarrativeAssetInfo, index: number) => (
                       <Draggable
                         key={row.asset_id}
@@ -173,103 +247,71 @@ const AssetTable = (props: any) => {
                         {(
                           draggableProvided: DraggableProvided,
                           snapshot: DraggableStateSnapshot
-                        ) => {
-                          return (
-                            <StyledTableRow
-                              ref={draggableProvided.innerRef}
-                              {...draggableProvided.draggableProps}
-                              style={{
-                                ...draggableProvided.draggableProps.style,
-                                background: snapshot.isDragging
-                                  ? 'rgba(245,245,245, 0.75)'
-                                  : 'none',
-                              }}
-                              key={row.asset_id}
-                              // onClick={() => handleUpdateAsset(row.asset_id)
-                              // }
-                            >
-                              <StyledTableCell align="left">
-                                <div {...draggableProvided.dragHandleProps}>
-                                  <ReorderIcon />
-                                </div>
-                              </StyledTableCell>
-                              <StyledTableCell component="td">
-                                <Checkbox
-                                  className={
-                                    solutionNarrativeStoreData.assetInfo.filter(
-                                      (asset) =>
-                                        asset.asset_id === row.asset_id &&
-                                        asset.is_selected === true
-                                    ).length > 0
-                                      ? styles.assetCheckBox
-                                      : ''
-                                  }
-                                  checked={
-                                    solutionNarrativeStoreData.assetInfo.filter(
-                                      (asset) =>
-                                        asset.asset_id === row.asset_id &&
-                                        asset.is_selected === true
-                                    ).length > 0
-                                  }
-                                  onClick={(e) => {
-                                    console.log('insise table vclick');
-                                    console.log(
-                                      solutionNarrativeStoreData.assetInfo
-                                    );
-
-                                    const updatedAssetInfo =
-                                      solutionNarrativeStoreData.assetInfo.map(
-                                        (assetInfo) => {
-                                          if (
-                                            assetInfo.asset_id === row.asset_id
-                                          ) {
-                                            console.log(!assetInfo.is_selected);
-                                            return {
-                                              ...assetInfo,
-                                              is_selected:
-                                                !assetInfo.is_selected,
-                                            };
-                                          }
-                                          return assetInfo;
-                                        }
-                                      );
-                                    console.log(updatedAssetInfo);
-
-                                    dispatch(
-                                      setAssetInfo({
-                                        assetInfo: updatedAssetInfo,
-                                      })
-                                    );
-                                  }}
+                        ) => (
+                          <StyledTableRow
+                            ref={draggableProvided.innerRef}
+                            {...draggableProvided.draggableProps}
+                            style={{
+                              ...draggableProvided.draggableProps.style,
+                              background: snapshot.isDragging
+                                ? 'rgba(245,245,245, 0.75)'
+                                : 'none',
+                            }}
+                            key={row.asset_id}
+                          >
+                            <StyledTableCell align="left">
+                              <div {...draggableProvided.dragHandleProps}>
+                                {/* <ReorderIcon /> */}
+                                <img
+                                  src={reOrderIcon}
+                                  alt=""
+                                  style={{ marginLeft: '15px' }}
                                 />
-                              </StyledTableCell>
-                              <StyledTableCell>
-                                {row.asset_name}
-                              </StyledTableCell>
-                              <StyledTableCell>
-                                <div className={styles.docTypeCell}>
-                                  <img src={getDocIcon(row.file_type)} alt="" />
-                                  <span>{row.file_type}</span>
-                                </div>
-                              </StyledTableCell>
-                              <StyledTableCell>
-                                {row.access_type}
-                              </StyledTableCell>
-                              <StyledTableCell>
-                                <div className={styles.chipsWrap}>
-                                  {row.tags.map((li: string, idx: number) => (
-                                    <span
-                                      className={styles.tagChip}
-                                      key={`${idx + 1}+${li}`}
-                                    >
-                                      {li}
-                                    </span>
-                                  ))}
-                                </div>
-                              </StyledTableCell>
-                            </StyledTableRow>
-                          );
-                        }}
+                              </div>
+                            </StyledTableCell>
+                            <StyledTableCell
+                              component="td"
+                              className={styles.checkBoxTd}
+                            >
+                              <Checkbox
+                                className={
+                                  selectedSolNarrId.length > 0 &&
+                                  selectedSolNarrId.includes(row.asset_id)
+                                    ? styles.assetCheckBox
+                                    : ''
+                                }
+                                checked={
+                                  selectedSolNarrId.length > 0
+                                    ? selectedSolNarrId.includes(row.asset_id)
+                                    : false
+                                }
+                                onClick={(e) =>
+                                  handleCheckboxClick(e, row.asset_id, row)
+                                }
+                              />
+                            </StyledTableCell>
+                            <StyledTableCell>{row.asset_name}</StyledTableCell>
+                            <StyledTableCell>
+                              <div className={styles.docTypeCell}>
+                                <img src={getDocIcon(row.file_type)} alt="" />
+                                <span>{row.file_type}</span>
+                              </div>
+                            </StyledTableCell>
+                            <StyledTableCell>{row.access_type}</StyledTableCell>
+                            <StyledTableCell>
+                              <div className={styles.chipsWrap}>
+                                {row.tags.map((li: string, idx: number) => (
+                                  <span
+                                    className={styles.tagChip}
+                                    key={`${idx + 1}+${li}`}
+                                  >
+                                    {li}
+                                  </span>
+                                ))}
+                              </div>
+                            </StyledTableCell>
+                          </StyledTableRow>
+                        )}
                       </Draggable>
                     )
                   )}

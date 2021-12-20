@@ -70,8 +70,8 @@
 }
 
 .assetTable tr td:nth-child(1) {
-  max-width: 15% !important;
-  width: 15% !important;
+  max-width: 5% !important;
+  width: 5% !important;
   border-bottom: 1px solid rgba(224, 224, 224, 1) !important;
 }
 .assetTable thead {
@@ -111,6 +111,9 @@
 
 .assetCheckBox svg {
   color: #4c70e3 !important;
+}
+.checkBoxTd {
+  width: 50px !important;
 }
 
 .plusWrap {

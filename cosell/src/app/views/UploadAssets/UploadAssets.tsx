@@ -78,12 +78,17 @@ const UploadAssets = () => {
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
   const [count, setCount] = useState(0);
+  const [alert, setAlert] = useState({
+    showAlert: false,
+    severity: '',
+    message: '',
+  });
 
   const queryparams = new URLSearchParams(window.location.search);
   const partnershipId: string = queryparams.get('partner_ship_id') || '0';
   const uploadAssetRespData = useSelector(selectuploadAssetResponse);
   const dispatch = useDispatch();
-
+  console.log(uploadAssetRespData, 'uploadAssetRespData');
   const fetchAssetData = () => {
     const token = localStorage.getItem('token');
 
@@ -138,6 +143,12 @@ const UploadAssets = () => {
     setUploadModalShow(modalShow);
   }, []);
 
+  // useEffect(() => {
+  //   if (uploadAssetRespData.errorMsg !== '') {
+  //     setShowAlert(true);
+  //   }
+  // }, [uploadAssetRespData]);
+
   const handleDeleteAsset = (assets: string[]) => {
     const assetId = assets.filter((s: string) => s !== '');
     dispatch(
@@ -148,7 +159,13 @@ const UploadAssets = () => {
         setSelected,
         () => showDeleteModal(false),
         () => setLoading(false),
-        () => setShowAlert(true),
+        (value: string, msg: string) =>
+          setAlert((prevState: any) => ({
+            ...prevState,
+            showAlert: true,
+            message: uploadAssetRespData.errorMsg,
+            severity: value,
+          })),
         fetchAssetData
       )
     );
@@ -156,9 +173,6 @@ const UploadAssets = () => {
   const handleGetAssetData = (e: any, data: any) => {
     setOffset((data - 1) * limit);
   };
-  useEffect(() => {
-    fetchAssetData();
-  }, [offset]);
 
   const handleUpdateAsset = (id: number) => {
     setUpdateId(id.toString());
@@ -197,11 +211,29 @@ const UploadAssets = () => {
         accessDocTypeSearch,
         setTableData,
         () => setLoading(false),
-        () => setShowAlert(true),
+        (value: string, msg: string) =>
+          setAlert((prevState: any) => ({
+            ...prevState,
+            showAlert: true,
+            message: msg,
+            severity: value,
+          })),
         setCount
       )
     );
   };
+
+  useEffect(() => {
+    if (
+      (accessType === '' || accessType === 'All') &&
+      (accessDocType === '' || accessDocType === 'All') &&
+      assetName === ''
+    ) {
+      fetchAssetData();
+    } else {
+      handleSearch();
+    }
+  }, [offset]);
 
   const handleFilter = (name: string, value: string) => {
     if (name === 'accDocType') {
@@ -275,7 +307,18 @@ const UploadAssets = () => {
               <input
                 type="text"
                 name="name"
-                onChange={(e: any) => setAssetName(e.target.value)}
+                onKeyDown={(e: any) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                  }
+                }}
+                onChange={(event: any) => {
+                  if (event.key === 'Enter') {
+                    event.preventDefault();
+                  } else {
+                    setAssetName(event.target.value);
+                  }
+                }}
                 placeholder="Search assets"
                 className={styles.searchbar}
               />
@@ -319,7 +362,7 @@ const UploadAssets = () => {
                         setaccessTypeMenu(false);
                       }}
                     >
-                      <em>All</em>
+                      All
                     </MenuItem>
 
                     {accessTypeList.map((list: listObjectType) => (
@@ -376,7 +419,7 @@ const UploadAssets = () => {
                         setaccessDocTypeMenu(false);
                       }}
                     >
-                      <em>All</em>
+                      All
                     </MenuItem>
                     {accessDocTypeList.map((list: any) => (
                       <MenuItem
@@ -399,10 +442,11 @@ const UploadAssets = () => {
           <div className={styles.searchBtn}>
             <Button
               className={styles.assetBtn}
-              // disabled={
-              //   assetName === '' && accessDocType === '' && accessType === ''
-              // }
-              onClick={() => handleSearch()}
+              onClick={() => {
+                setOffset(0);
+                handleSearch();
+              }}
+              // disabled={tableData.length === 0}
             >
               {uploadAssetsLabels.search}
             </Button>
@@ -422,7 +466,7 @@ const UploadAssets = () => {
       {count > limit && (
         <Stack spacing={2} className={styles.paginationWrap}>
           <Pagination
-            count={parseInt((count / limit).toString(), 10) + 1}
+            count={Math.ceil(count / limit)}
             shape="rounded"
             onChange={(e, data) => handleGetAssetData(e, data)}
           />
@@ -451,7 +495,14 @@ const UploadAssets = () => {
               partnershipId={partnershipId}
               setLoader={() => setLoading(true)}
               clearLoader={() => setLoading(false)}
-              showAlert={() => setShowAlert(true)}
+              showAlert={(value: string, msg: string) =>
+                setAlert((prevState: any) => ({
+                  ...prevState,
+                  showAlert: true,
+                  message: msg,
+                  severity: value,
+                }))
+              }
               cancelHandler={() => {
                 setUploadModalShow(false);
                 setUpdateId('');
@@ -461,11 +512,17 @@ const UploadAssets = () => {
           }
         />
       )}
-      {showAlert && (
+      {console.log(uploadAssetRespData, 'successsghj')}
+      {alert.showAlert && (
         <SnackbarAlert
-          severity="error"
-          handler={() => setShowAlert(false)}
-          showalert={showAlert && uploadAssetRespData.errorMsg !== ''}
+          severity={alert.severity}
+          handler={() => {
+            setAlert((prevState: any) => ({
+              ...prevState,
+              showAlert: false,
+            }));
+          }}
+          showalert={alert.showAlert}
           message={uploadAssetRespData.errorMsg}
         />
       )}

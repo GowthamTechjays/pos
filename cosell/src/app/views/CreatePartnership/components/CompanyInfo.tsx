@@ -290,7 +290,7 @@ const CompanyInfo = ({ steps, history, isUpdate }: Props) => {
                           <RenderErrorMessage name="companyName" />
                         </div>
                       </div>
-                      <div className="company-info-field">
+                      <div className="company-info-field textAreaInput">
                         <div>{CompanyInfoLabels.companyAddress}</div>
                         <div>
                           <Field

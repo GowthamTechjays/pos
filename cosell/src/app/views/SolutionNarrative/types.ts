@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+/* eslint-disable linebreak-style */
 export type State = {
   errorMsg: string;
   assetInfo: SolutionNarrativeAssetInfo[];

@@ -47,12 +47,12 @@ interface partnership {
   partnership_id: number;
   content_hub_subdomain_name: string;
 }
-
+interface sidebar {
+  title: string;
+  href: string;
+  icon: string;
+}
 export default function Menubar() {
-  // const queryparams = new URLSearchParams(window.location.search);
-  // const partnershipId: string = queryparams.get('partner_ship_id') || '0';
-  // console.log(partnershipId);
-
   const pages = [
     {
       title: Sidebar.content,
@@ -126,7 +126,6 @@ export default function Menubar() {
   ];
   const history = useHistory();
   const partnershipResponseData = useSelector(selectCreatePartnershipResponse);
-
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const [partnerships, setPartnerships] = useState<partnership[]>();
   const [partnerId, setpartnerId] = useState(0);
@@ -139,6 +138,7 @@ export default function Menubar() {
   const [sidebarContent, setSidebarContent] = useState(pages);
   const [partnershipId, setPartnershipId] = useState('');
   const [uploadAsset, setUploadAsset] = useState(true);
+  const [isPartnerSelected, setIsPartnerSelected] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -169,7 +169,6 @@ export default function Menubar() {
     setModalActive(true);
     setpartnerId(id);
   };
-  console.log(uploadAsset, 'uploadAsset');
   const handleListItemClick = (index: number, href: string, title: string) => {
     if (title === Sidebar.content) {
       setContentSelected(!contentSelected);
@@ -185,6 +184,8 @@ export default function Menubar() {
         history.push(`/accountSetup?partner_ship_id=${partnershipId}`);
       } else if (title === Sidebar.solutionNarrative && uploadAsset) {
         history.push(`/solutionNarrative?partner_ship_id=${partnershipId}`);
+      } else if (title === Sidebar.salesHub && uploadAsset) {
+        history.push(`/salesHub?partner_ship_id=${partnershipId}`);
       }
     }
   };
@@ -244,9 +245,9 @@ export default function Menubar() {
   const editPartnership = (id: number) => {
     getPartnershipById(id);
     history.push(`/previewPartnership?partner_ship_id=${id}`);
+    setIsPartnerSelected(true);
     setDropDownActive(!isDropDownActive);
   };
-
   return (
     <Box sx={{ width: '100%' }}>
       <div className={isModalActive ? styles.modalActive : styles.modal}>
@@ -272,11 +273,17 @@ export default function Menubar() {
           </PrimaryButton>
         </div>
       </div>
-
       <div className={styles.dropdown}>
         <button className={styles.dropdownBtn} onClick={ToggleClass}>
-          {' '}
-          {partnershipName}
+          <div
+            className={
+              isPartnerSelected || partnershipName !== 'Create partnership'
+                ? styles.dropdownBtnLabelSelected
+                : styles.dropdownBtnLabel
+            }
+          >
+            {partnershipName}
+          </div>
           <KeyboardArrowDownIcon
             className={`${styles.arrowIcon}  ${
               isDropDownActive ? styles.arrowIconActive : ''

@@ -1,3 +1,8 @@
+/* eslint-disable react/no-this-in-sfc */
+/* eslint-disable camelcase */
+/* eslint-disable prefer-template */
+/* eslint-disable operator-linebreak */
+/* eslint-disable func-names */
 /* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable linebreak-style */
 
@@ -9,14 +14,22 @@ import pdfIcon from '../../../assets/pdf_mini.svg';
 import xlsIcon from '../../../assets/excel_mini.svg';
 import videoIcon from '../../../assets/video_mini.svg';
 import imageIcon from '../../../assets/img_mini.svg';
+import othersIcon from '../../../assets/others_preview.svg';
 
 import styles from './AssetPreview.module.css';
 
 const AssetPreview = (props: any) => {
-  const { file } = props;
-  const extension = file.name.substr(file.name.lastIndexOf('.') + 1);
-  const size: number = +file.size;
+  const { file, file1 } = props;
+
+  console.log(file, file1, 'props in prev');
+  const extension =
+    file !== ''
+      ? file.name.substr(file.name.lastIndexOf('.') + 1)
+      : file1.substr(file1.lastIndexOf('.') + 1);
+  const size: number = file !== '' ? +file.size : 8260;
   const fileSize = size * 0.001;
+  const filePath =
+    'https://d1wjau4dvmc4kc.cloudfront.net/media/public/assets/files/file_181.png';
 
   const fileIcon = () => {
     let icon = '';
@@ -27,10 +40,19 @@ const AssetPreview = (props: any) => {
       case 'doc':
         icon = wordIcon;
         break;
+      case 'TXT':
+        icon = wordIcon;
+        break;
+      case 'txt':
+        icon = wordIcon;
+        break;
       case 'pdf':
         icon = pdfIcon;
         break;
       case 'pptx':
+        icon = pptIcon;
+        break;
+      case 'ppt':
         icon = pptIcon;
         break;
       case 'xlsx':
@@ -45,6 +67,9 @@ const AssetPreview = (props: any) => {
       case 'mp4':
         icon = videoIcon;
         break;
+      case 'MP4':
+        icon = videoIcon;
+        break;
       case 'MOV':
         icon = videoIcon;
         break;
@@ -54,11 +79,17 @@ const AssetPreview = (props: any) => {
       case 'jpg':
         icon = imageIcon;
         break;
+      case 'jfif':
+        icon = imageIcon;
+        break;
+      case 'gif':
+        icon = imageIcon;
+        break;
       case 'jpeg':
         icon = imageIcon;
         break;
       default:
-        icon = wordIcon;
+        icon = othersIcon;
     }
     return icon;
   };

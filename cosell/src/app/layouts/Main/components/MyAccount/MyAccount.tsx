@@ -124,6 +124,10 @@ const MyAccount = (props: any) => {
       .matches(
         /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
         'Must contain 8 Characters, One uppercase, One lowercase, One number and one special case character'
+      )
+      .notOneOf(
+        [Yup.ref('currentPassword'), null],
+        'New password must be different from current password'
       ),
     confirmPassword: Yup.string()
       .required('Please confirm your new password')

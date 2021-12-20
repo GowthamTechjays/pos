@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable react/jsx-indent */
 /* eslint-disable indent */
 /* eslint-disable object-curly-newline */
@@ -28,6 +29,7 @@ import {
 import uploadIcon from '../../../../assets/upload-logo.svg';
 import SecondaryButton from '../../../../components/Button/SecondaryButton';
 import styles from './AssetForm.module.css';
+import './AssetForm.css';
 import { saveAssetAction } from '../../UploadAssetSlice';
 import AssetPreview from '../../AssetPreview';
 
@@ -52,8 +54,8 @@ const AssetForm = (props: any) => {
   } = props;
   const dispatch = useDispatch();
   const statusList = [
-    { key: 'active', value: 1, text: 'Active' },
-    { key: 'inActive', value: 2, text: 'Active' },
+    { key: 'active', id: 1, value: 'Active' },
+    { key: 'Inactive', id: 2, value: 'Inactive' },
   ];
   const [selectedFile, setSelectedFile] = React.useState('');
   const [tagErr, setTagErr] = React.useState('');
@@ -107,10 +109,12 @@ const AssetForm = (props: any) => {
   }, []);
 
   const assetSchema = Yup.object().shape({
-    assetName: Yup.string().required('Asset name is required'),
+    assetName: Yup.string()
+      .trim()
+      .min(3, 'Minimum 3 characters is required')
+      .required('Asset name is required'),
     assetType: Yup.string().trim().required('Asset type is required'),
-    assetFile: Yup.string().trim().required('Asset file is required'),
-    // tags: Yup.string().trim().required('Tags are required'),
+    assetFile: Yup.string().trim().required('Upload file is required'),
   });
   console.log(updateId, 'updateId');
 
@@ -151,7 +155,7 @@ const AssetForm = (props: any) => {
                   )
                 );
               } else {
-                setFieldError('tags', 'Atleast one tag is required');
+                setFieldError('tags', 'One tag is required');
               }
             }}
           >
@@ -164,6 +168,8 @@ const AssetForm = (props: any) => {
                 touched,
                 handleBlur,
                 setErrors,
+                setFieldError,
+                setFieldTouched,
               } = formik;
               console.log(errors, 'errors');
               return (
@@ -190,7 +196,7 @@ const AssetForm = (props: any) => {
                         <Field
                           type="text"
                           name="assetName"
-                          required
+                          // required
                           value={values.assetName}
                           onChange={handleChange}
                           onBlur={handleBlur}
@@ -214,6 +220,16 @@ const AssetForm = (props: any) => {
                           name="assetType"
                           value={values.assetType}
                           displayEmpty
+                          renderValue={
+                            values.assetType !== ''
+                              ? undefined
+                              : () => (
+                                  <span style={{ color: '#00000059' }}>
+                                    {' '}
+                                    {uploadAssetsLabels.accessType}
+                                  </span>
+                                )
+                          }
                           onChange={handleChange}
                           onBlur={handleBlur}
                           className={styles.uploadAssetSelect}
@@ -235,14 +251,16 @@ const AssetForm = (props: any) => {
                       >
                         {uploadAssetsLabels.uploadFile}
                       </div>
-                      <div className={styles.semiField}>
+                      <div className={`${styles.semiField} disabledFile`}>
                         <Field
                           name="assetFile"
                           component={GenTextField}
                           type="file"
-                          hasError={errors.assetFile && touched.assetFile}
-                          errorMessage={errors.assetFile}
-                          onBlur={handleBlur}
+                          disabled
+                          // onBlur={handleBlur}
+                          // onClick={() => {}}
+                          // errorMessage={errors.assetFile && touched.assetFile}
+                          // hasError={errors.assetFile}
                           placeholder={uploadAssetsLabels.uploadFile}
                           InputProps={{
                             endAdornment: (
@@ -259,7 +277,9 @@ const AssetForm = (props: any) => {
                                     ref={fileInput}
                                     type="file"
                                     style={{ display: 'none' }}
-                                    onChange={(e) => onFileSelected(e)}
+                                    onChange={(e) => {
+                                      onFileSelected(e);
+                                    }}
                                   />
                                   <img src={uploadIcon} alt="" />
                                 </IconButton>
@@ -290,6 +310,7 @@ const AssetForm = (props: any) => {
                           errorMessage={errors.tags && touched.tags}
                           placeholder="add Tags"
                           hasError
+                          // helperText="Add tags by pressing enter"
                         />
                         <RenderErrorMessage name="tags" />
                       </div>
@@ -332,8 +353,11 @@ const AssetForm = (props: any) => {
                     )}
                   </div>
                   <div className={styles.previewWrap}>
-                    {selectedFile !== '' && (
-                      <AssetPreview file={selectedFile} />
+                    {(selectedFile !== '' || values.assetFile !== '') && (
+                      <AssetPreview
+                        file={selectedFile}
+                        file1={values.assetFile}
+                      />
                     )}
                   </div>
 

@@ -1,6 +1,7 @@
 /* eslint-disable linebreak-style */
 export type State = {
   errorMsg: string;
+  flag: string;
 };
 
 export interface uploadAssetPayload {

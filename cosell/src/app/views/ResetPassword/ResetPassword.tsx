@@ -18,6 +18,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import Loader from 'src/app/components/Loader';
+import { useHistory } from 'react-router';
 import { postRequest, getRequest } from '../../service';
 import { ResetPasswordLabels } from '../../../strings';
 import {
@@ -36,6 +37,7 @@ const ResetPassword = () => {
     newPassword: '',
     confirmPassword: '',
   };
+  const history = useHistory();
   const validationSchema = Yup.object({
     newPassword: Yup.string()
       .required('Please enter your password')
@@ -192,6 +194,11 @@ const ResetPassword = () => {
                       >
                         {ResetPasswordLabels.changePassword}
                       </Button>
+                      <div className={`${styles.link} ${styles.signIn}`}>
+                        <Button onClick={() => history.push('/')} size="small">
+                          {ResetPasswordLabels.signIn}
+                        </Button>
+                      </div>
                     </Form>
                   );
                 }}
@@ -209,7 +216,13 @@ const ResetPassword = () => {
               </div>
               <h3>{displayMsg}</h3>
 
-              <a href="/">{ResetPasswordLabels.signInwithNewPw}</a>
+              <a
+                target="_blank"
+                href="https://sprint-portal.cosell.partners/"
+                rel="noreferrer"
+              >
+                {ResetPasswordLabels.signInwithNewPw}
+              </a>
             </div>
           ) : (
             <h3

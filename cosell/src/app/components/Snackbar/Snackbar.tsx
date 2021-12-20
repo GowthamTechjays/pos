@@ -15,10 +15,10 @@ const SnackbarAlert = (props: any) => (
   <div>
     <Snackbar
       autoHideDuration={props.severity === 'success' ? 3000 : null}
-      style={{ height: '24%' }}
+      style={{ height: '24%', marginLeft: '5%' }}
       anchorOrigin={{
         vertical: 'top',
-        horizontal: 'right',
+        horizontal: 'center',
       }}
       open={props.showalert}
       TransitionComponent={SlideTransition}
@@ -31,9 +31,9 @@ const SnackbarAlert = (props: any) => (
           </Button>
         }
         style={{
-          width: '350px',
+          width: '400px',
           justifyContent: 'center',
-          fontSize: '12px',
+          fontSize: '18px',
         }}
         severity={props.severity}
       >

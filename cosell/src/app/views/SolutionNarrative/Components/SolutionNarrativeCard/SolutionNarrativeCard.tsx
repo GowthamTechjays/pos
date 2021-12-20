@@ -16,33 +16,24 @@ interface solutionNarrativeCardValues {
   link: string;
 }
 
-function SolutionNarrativeCard(
-  solutionNarrativeCardInfoValues: solutionNarrativeCardValues
-) {
+function SolutionNarrativeCard(props: solutionNarrativeCardValues) {
   return (
     <div className={styles.solution_narrative_card_main_div}>
       <div className={styles.solution_narrative_card_img_div}>
         <img
           className={styles.solution_narrative_card_img}
-          src={solutionNarrativeCardInfoValues.img}
+          src={props.img}
           alt="img"
         />
       </div>
       <div className={styles.solution_narrative_card_main_contents_div}>
         <div className={styles.solution_narrative_card_title_div}>
-          {solutionNarrativeCardInfoValues.title}
+          {props.title}
         </div>
         <div className={styles.solution_narrative_card_content_div}>
-          {solutionNarrativeCardInfoValues.content}
+          {props.content}
         </div>
-        <a
-          className={styles.solution_narrative_card_link}
-          onClickCapture={() =>
-            window.open(solutionNarrativeCardInfoValues.link)
-          }
-        >
-          Know More {`>`}
-        </a>
+        <a className={styles.solution_narrative_card_link}>Know More {`>`}</a>
       </div>
     </div>
   );

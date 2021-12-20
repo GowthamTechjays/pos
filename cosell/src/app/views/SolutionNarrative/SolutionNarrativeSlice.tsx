@@ -89,7 +89,7 @@ export const {
 export const saveSolutionNarrativeAction =
   (
     payload: solutionNarrativePayload,
-    solutionNarrativeId: string,
+    solutionNarrativeId: any,
     partnershipId: string,
     // thumbnailImage: File,
     loaderAction: () => void,
@@ -159,7 +159,8 @@ export const deleteAssetAction =
     solutionNarrativeIds: number[],
     loaderAction: () => void,
     setAlert: (value: string) => void,
-    refreshSolutionNarrative: () => void
+    refreshSolutionNarrative: () => void,
+    closeDialogBox: () => void
   ) =>
   (dispatch: AppDispatch) => {
     const token = localStorage.getItem('token');
@@ -177,7 +178,7 @@ export const deleteAssetAction =
         loaderAction();
         setAlert('success');
         refreshSolutionNarrative();
-      } else {
+        closeDialogBox();
       }
     });
   };

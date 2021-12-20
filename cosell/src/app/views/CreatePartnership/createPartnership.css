@@ -28,7 +28,7 @@
 }
 
 .create-partnership-info-field {
-  width: 40%;
+  width: 55%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -44,6 +44,18 @@
   display: flex;
   margin: 35px 0px 20px 0px;
   height: 42px;
+}
+
+.tagInput input {
+  padding: 0 !important;
+  height: 21px !important;
+}
+.tagInput > div {
+  flex-wrap: wrap !important;
+  padding: 10px !important;
+}
+.textAreaInput textarea {
+  min-height: 80px !important;
 }
 
 .company-info-form {

@@ -18,6 +18,7 @@ import StepLabel from '@mui/material/StepLabel';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRequest } from 'src/app/service';
 import Loader from 'src/app/components/Loader';
+import TagsInput from 'src/app/components/TagsInput';
 import { RenderErrorMessage, GenTextField } from '../../../components/Form';
 import PrimaryButton from '../../../components/Button/PrimaryButton';
 import SecondaryButton from '../../../components/Button/SecondaryButton';
@@ -35,6 +36,7 @@ import {
 interface PartnershipInfoValues {
   partnershipName: string;
   websiteSubDomain: string;
+  whitelistedDomain: string[];
 }
 
 interface Props {
@@ -85,6 +87,7 @@ const PartnerShipInfo = ({ steps, history, isUpdate }: Props, props: any) => {
           setInitialValues({
             partnershipName: resp.data.partnership_name,
             websiteSubDomain: resp.data.content_hub_subdomain_name,
+            whitelistedDomain: [''],
           });
         } else {
           console.log(resp.data, 'error');
@@ -95,6 +98,7 @@ const PartnerShipInfo = ({ steps, history, isUpdate }: Props, props: any) => {
       setInitialValues({
         partnershipName: '',
         websiteSubDomain: '',
+        whitelistedDomain: [],
       });
       setLoading(false);
     }
@@ -173,7 +177,16 @@ const PartnerShipInfo = ({ steps, history, isUpdate }: Props, props: any) => {
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
-                onSubmit={handleSubmit}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSubmit(e);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                  }
+                }}
+                // onSubmit={handleSubmit}
               >
                 <div className="create-partnership-info-form">
                   <div className="create-partnership-info-field">
@@ -191,6 +204,7 @@ const PartnerShipInfo = ({ steps, history, isUpdate }: Props, props: any) => {
                         }
                         errorMessage={errors.partnershipName}
                         component={GenTextField}
+                        required
                       />
                       <RenderErrorMessage name="partnershipName" />
                     </div>
@@ -242,6 +256,31 @@ const PartnerShipInfo = ({ steps, history, isUpdate }: Props, props: any) => {
                       )}
                     </div>
                   </div>
+                  {/* <div className="create-partnership-info-field">
+                    <div>{CreatePartnershipLabels.whitelistedDomainLabel}</div>
+                    <div
+                      style={{
+                        marginLeft: '25px',
+                        minWidth: '270px',
+                        width: '270px',
+                      }}
+                    >
+                      <TagsInput
+                        selectedTags={(tags: string) => console.log(tags)}
+                        fullWidth
+                        selectedChip={values.whitelistedDomain}
+                        className="tagInput tagsField"
+                        variant="outlined"
+                        id="tags"
+                        type="text"
+                        name="whitelistedDomain"
+                        errorMessage={errors.whitelistedDomain}
+                        placeholder={CreatePartnershipLabels.whitelistedDomain}
+                        hasError
+                      />
+                      <RenderErrorMessage name="whitelistedDomain" />
+                    </div>
+                  </div> */}
                   <div className="create-partnership-info-button-container">
                     <SecondaryButton
                       style={{ minWidth: '160px', marginRight: '30px' }}

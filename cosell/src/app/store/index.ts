@@ -7,13 +7,15 @@ import signUpReducer from '../views/SignUp/SignUpSlice';
 import createPartnershipReducer from '../views/CreatePartnership/CreatePartnerShipSlice';
 import UploadAssetReducer from '../views/UploadAssets/UploadAssetSlice';
 import solutionNarrativeReducer from '../views/SolutionNarrative/SolutionNarrativeSlice';
+import salesHubReducer from '../views/SalesHub/SalesHubSlice';
 
 const rootReducer = combineReducers({
   signInSlice: signInReduer,
   signUpSlice: signUpReducer,
-  uploadAssetSlice: UploadAssetReducer,
   createPartnershipSlice: createPartnershipReducer,
+  uploadAssetSlice: UploadAssetReducer,
   solutionNarrativeSlice: solutionNarrativeReducer,
+  salesHubSlice: salesHubReducer,
   form: formReducer,
 });
 

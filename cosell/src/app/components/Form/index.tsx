@@ -44,11 +44,15 @@ export const GenTextField: React.FC<FieldProps & TextFieldProps> = ({
   field,
   multiline,
   InputProps,
+  required,
+  disabled,
 }) => (
   <TextField
     placeholder={placeholder}
     label={label}
     {...field}
+    required={required || false}
+    disabled={disabled || false}
     multiline={multiline || false}
     InputProps={InputProps}
     variant="outlined"

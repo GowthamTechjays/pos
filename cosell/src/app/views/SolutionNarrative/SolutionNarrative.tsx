@@ -1,3 +1,7 @@
+/* eslint-disable indent */
+/* eslint-disable linebreak-style */
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable indent */
 /* eslint-disable linebreak-style */
 /* eslint-disable comma-dangle */
 /* eslint-disable react/jsx-wrap-multilines */
@@ -8,29 +12,31 @@ import PrimaryButton from 'src/app/components/Button/PrimaryButton';
 import SideBarWithPreview from 'src/app/components/SideBar/SideBarWithPreview';
 import { getRequest } from 'src/app/service';
 import Checkbox from '@material-ui/core/Checkbox/Checkbox';
+import { useDispatch, useSelector } from 'react-redux';
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
+import Loader from 'src/app/components/Loader';
+import SnackbarAlert from 'src/app/components/Snackbar/Snackbar';
+import DialogBox from 'src/app/components/DialogBox';
 import styles from './SolutionNarrative.module.css';
-import { SolutionNarrativeLabels } from '../../../strings';
+import { SalesHubLabels, SolutionNarrativeLabels } from '../../../strings';
 import CreateIcon from '../../assets/create_icon.svg';
 import SolutionNarrativeForm from './SolutionNarrativeForm';
 import SolutionNarrativePreview from './SolutionNarrativePreview';
 import SolutionNarrativeCard from './Components/SolutionNarrativeCard';
 
 import {
-  solutionNarrativeSlice,
-  setSlectedSolutionNarrativeIds,
-  selectSolutionNarrativeResponse,
+  // solutionNarrativeSlice,
+  // setSlectedSolutionNarrativeIds,
+  // selectSolutionNarrativeResponse,
+  // setSlectedSolutionNarrativeInfo,
   deleteAssetAction,
-  setSlectedSolutionNarrativeInfo,
 } from './SolutionNarrativeSlice';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   Alert,
-  SolutionNarrativeAssetInfo,
+  // SolutionNarrativeAssetInfo,
   SolutionNarrativeInfo,
 } from './types';
-import Pagination from '@mui/material/Pagination';
-import Stack from '@mui/material/Stack';
-import Loader from 'src/app/components/Loader';
 
 interface assetValues {
   name: string;
@@ -54,25 +60,21 @@ interface SolutionNarrativeObject {
   thumbnailImage: string;
   tags: string[];
 }
+interface alert {
+  showAlert: boolean;
+  severity: string;
+  message: string;
+}
 
 const SolutionNarrative = () => {
-  const accessTypeList = [
-    { key: 'Internal', id: 1, value: 'Internal' },
-    { key: 'External', id: 2, value: 'External' },
-  ];
-  const accessDocTypeList = [
-    { key: 'Video', id: 3, value: 'Video' },
-    { key: 'Image', id: 2, value: 'Image' },
-    { key: 'Pdf', id: 1, value: 'Pdf' },
-    { key: 'PowerPoint', id: 4, value: 'PowerPoint' },
-  ];
   const dispatch = useDispatch();
-  const solutionNarrativeStoreData = useSelector(
-    selectSolutionNarrativeResponse
-  );
-  const solutionNarratives = useSelector(
-    selectSolutionNarrativeResponse
-  ).solutionNarrativeInfo;
+  // const solutionNarrativeStoreData = useSelector(
+  //   selectSolutionNarrativeResponse
+  // );
+  // const solutionNarratives = useSelector(
+  //   selectSolutionNarrativeResponse
+  // ).solutionNarrativeInfo;
+  const [solutionNarratives, setSolutionNarratives] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [formValues, setFormValues] = useState<SolutionNarrativeValues>();
   const [selected, setSelected] = useState([]);
@@ -81,60 +83,71 @@ const SolutionNarrative = () => {
   const [solutionNarrativeID, setSolutionNarrativeID] = useState<
     number | string
   >();
-  const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(5);
-  const [count, setCount] = useState(0);
   const [solutionNarrativeOffset, setSolutionNarrativeOffset] = useState(0);
   const [solutionNarrativelimit, setSolutionNarrativelimit] = useState(5);
   const [solutionNarrativeCount, setSolutionNarrativeCount] = useState(0);
   const [showAlert, setShowAlert] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
   const [alert, setAlert] = useState({
     showAlert: false,
     severity: '',
     message: '',
   });
 
-  useEffect(() => {
-    fetchSolutionNarrativeData();
-  }, []);
+  const [selectedSolNarrId, setSelectedSolNarrId] = useState([]);
+  const [selectedSolNarrativeObj, setSelectedSolNarrativeObj] = useState([]);
 
-  useEffect(() => {
-    fetchSolutionNarrativeData();
-  }, [solutionNarrativeOffset]);
+  // useEffect(() => {
+  //   if (showForm === false) {
+  //     setOffset(0);
+  //   }
+  // }, [showForm]);
 
-  const fetchSolutionNarrativeData = () => {
+  const fetchSolutionNarrativeData = (currOffset) => {
+    setSolutionNarratives([]);
     const queryparams = new URLSearchParams(window.location.search);
-    const partnershipID: string = queryparams.get('partner_ship_id') || '0';
-    setPartnershipID(partnershipID);
+    const partnershipId: string = queryparams.get('partner_ship_id') || '0';
+    setPartnershipID(partnershipId);
     const token = localStorage.getItem('token');
-
+    setSolutionNarrativeOffset(currOffset);
+    console.log(solutionNarrativeOffset, 'solutionNarrativeOffset');
     getRequest(
-      `partnership/solution-narrative/?partnership_id=${partnershipID}&offset=${solutionNarrativeOffset}&limit=${solutionNarrativelimit}`,
+      `partnership/solution-narrative/?partnership_id=${partnershipId}&offset=${currOffset}&limit=${solutionNarrativelimit}`,
       {
         Authorization: `Token ${token}`,
       }
     ).then((response: any) => {
       if (response.result === true) {
-        dispatch(
-          setSlectedSolutionNarrativeInfo({
-            solutionNarrativeInfo: response.data,
-          })
-        );
+        // dispatch(
+        //   setSlectedSolutionNarrativeInfo({
+        //     solutionNarrativeInfo: response.data,
+        //   })
+        // );
+        setSolutionNarratives(response.data);
+        console.log(response.data);
+
         if (response.count) {
           setSolutionNarrativeCount(response.count);
         }
+        console.log(
+          'called in fetchSolutionNarrativeData',
+          response.count,
+          response.data
+        );
       }
     });
   };
+  useEffect(() => {
+    fetchSolutionNarrativeData(0);
+  }, []);
+  // useEffect(() => {
+  //   fetchSolutionNarrativeData();
+  // }, [solutionNarrativeOffset]);
 
-  const handleGetAssetData = (e: any, data: any) => {
-    setOffset((data - 1) * limit);
-  };
-
-  const handleGetSolutionNarrativeData = (e: any, data: any) => {
-    setSolutionNarrativeOffset((data - 1) * solutionNarrativelimit);
-  };
+  // const handleGetSolutionNarrativeData = (e: any, data: any) => {
+  //   setSolutionNarrativeOffset((data - 1) * solutionNarrativelimit);
+  // };
   const setAssetData = (tableData: any) => {
     setSelectedAssetInfo(tableData);
     console.log(tableData);
@@ -152,57 +165,53 @@ const SolutionNarrative = () => {
     setShowForm(true);
   };
 
-  const handleSolutionNarrativeCheckboxClick = (
-    isChecked: boolean,
-    solutionNarrativeID: number
-  ) => {
-    console.log(isChecked, ' tarisCheckedget');
+  // const handleSolutionNarrativeCheckboxClick = (
+  //   isChecked: boolean,
+  //   solutionNarrID: number
+  // ) => {
+  //   console.log(isChecked, ' tarisCheckedget');
+  //   console.log(solutionNarrID);
+  //   const updatedSolutionNarratives = solutionNarratives.map(
+  //     (solutionNarrative) => {
+  //       if (solutionNarrative.solution_narrative_id === solutionNarrID) {
+  //         return { ...solutionNarrative, is_selected: isChecked };
+  //       }
+  //       return solutionNarrative;
+  //     }
+  //   );
+  //   dispatch(
+  //     setSlectedSolutionNarrativeInfo({
+  //       solutionNarrativeInfo: updatedSolutionNarratives,
+  //     })
+  //   );
+  // };
 
-    console.log(solutionNarrativeID);
-    const updatedSolutionNarratives = solutionNarratives.map(
-      (solutionNarrative) => {
-        if (solutionNarrative.solution_narrative_id === solutionNarrativeID) {
-          return { ...solutionNarrative, is_selected: isChecked };
-        }
-        return solutionNarrative;
-      }
-    );
+  const deleteSolutionNarrative = () => {
+    setLoading(true);
     dispatch(
-      setSlectedSolutionNarrativeInfo({
-        solutionNarrativeInfo: updatedSolutionNarratives,
-      })
+      deleteAssetAction(
+        partnershipID,
+        selected,
+        () => setLoading(false),
+        (value: string) =>
+          setAlert((prevState: Alert) => ({
+            ...prevState,
+            showAlert: true,
+            message: SolutionNarrativeLabels.deletesolNarrMsg,
+            severity: value,
+          })),
+        () => fetchSolutionNarrativeData(0),
+        () => setShowDialog(false)
+      )
     );
+    setSolutionNarrativeOffset(0);
+    setSelected([]);
   };
-
   const handleCreateAndDeleteButtonClick = () => {
-    if (
-      solutionNarratives.filter(
-        (solutionNarrative) => solutionNarrative.is_selected === true
-      ).length > 0
-    ) {
-      setLoading(true);
-      dispatch(
-        deleteAssetAction(
-          partnershipID,
-          solutionNarratives
-            .filter(
-              (solutionNarrative) => solutionNarrative.is_selected === true
-            )
-            .map(
-              (solutionNarrative) => solutionNarrative.solution_narrative_id
-            ),
-          () => setLoading(false),
-          (value: string) =>
-            setAlert((prevState: Alert) => ({
-              ...prevState,
-              showAlert: true,
-              message: '',
-              severity: value,
-            })),
-          fetchSolutionNarrativeData
-        )
-      );
+    if (selected.length > 0) {
+      setShowDialog(true);
     } else {
+      setShowForm(true);
       setSolutionNarrativeID(null);
       setSelected([]);
       setAssetData({});
@@ -212,9 +221,30 @@ const SolutionNarrative = () => {
         tags: [''],
         thumbnailImage: '',
       });
-      setShowForm(true);
+      setSelectedSolNarrativeObj([]);
+      setSelectedSolNarrId([]);
     }
   };
+
+  const handleSolutionNarrativeCheckboxClick = (event: any, id: number) => {
+    // event.stopPropagation();
+    const selectedIndex = selected.indexOf(id);
+    let newSelected: any[] = [];
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1)
+      );
+    }
+    setSelected(newSelected);
+  };
+  console.log(selected, 'selected', solutionNarratives, showForm);
   return (
     <div className={styles.solutionNarrativeMainContainer}>
       <div className={styles.solutionNarrativeContainer}>
@@ -229,9 +259,7 @@ const SolutionNarrative = () => {
                 handleCreateAndDeleteButtonClick();
               }}
             >
-              {solutionNarratives.filter(
-                (solutionNarrative) => solutionNarrative.is_selected === true
-              ).length > 0 ? (
+              {selected.length > 0 ? (
                 ''
               ) : (
                 <img
@@ -240,16 +268,14 @@ const SolutionNarrative = () => {
                   alt=""
                 />
               )}
-              {solutionNarratives.filter(
-                (solutionNarrative) => solutionNarrative.is_selected === true
-              ).length > 0
+              {selected.length > 0
                 ? SolutionNarrativeLabels.deleteTitle
                 : SolutionNarrativeLabels.createButton}
             </PrimaryButton>
           </div>
         </div>
         <div className={styles.solutionNarrativeCard}>
-          {solutionNarratives &&
+          {solutionNarratives.length > 0 &&
             solutionNarratives.map(
               (solutionNarrative: SolutionNarrativeInfo) => (
                 <div className={styles.solutionNarrativeEachCard}>
@@ -260,6 +286,9 @@ const SolutionNarrative = () => {
                         solutionNarrative.solution_narrative_id
                       );
                     }}
+                    checked={selected.includes(
+                      solutionNarrative.solution_narrative_id
+                    )}
                     className={styles.solutionNarrativeEachCardCheckbox}
                   />
                   <div
@@ -291,46 +320,82 @@ const SolutionNarrative = () => {
               <SolutionNarrativePreview
                 solutionNarrativeId={solutionNarrativeID}
                 assetInfo={selectedAssetInfo}
-                selected={selected}
+                // selected={selected}
                 formValues={formValues}
+                selectedSolNarrativeObj={selectedSolNarrativeObj}
               />
             }
             renderRightElement={
               <SolutionNarrativeForm
                 solutionNarrativeId={solutionNarrativeID}
                 sendAssetData={setAssetData}
-                count={count}
-                limit={limit}
-                offset={offset}
-                handleGetAssetData={handleGetAssetData}
-                setCount={setCount}
+                // assetData={assetData}
+                // handleGetAssetData={handleGetAssetData}
                 showAlert={() => setShowAlert(true)}
                 sendFormValues={setFromValues}
                 fetchSolutionNarrativeData={fetchSolutionNarrativeData}
                 cancelHandler={() => setShowForm(false)}
+                selectedSolNarrId={selectedSolNarrId}
+                setSelectedSolNarrId={setSelectedSolNarrId}
+                selectedSolNarrativeObj={selectedSolNarrativeObj}
+                setSelectedSolNarrativeObj={setSelectedSolNarrativeObj}
+                refreshSolutionNarrativeInformation={() => {
+                  fetchSolutionNarrativeData(0);
+                }}
               />
             }
           />
         )}
-        {/* {solutionNarrativeCount >= solutionNarrativelimit && ( */}
 
-        {/* )} */}
+        <DialogBox
+          title=""
+          primaryContent={SolutionNarrativeLabels.deleteDialogPrimaryContent}
+          secondaryContent={
+            SolutionNarrativeLabels.deleteDialogSecondaryContent
+          }
+          secondaryButton={SolutionNarrativeLabels.deleteDialogSecondaryButton}
+          primaryButton={SolutionNarrativeLabels.deleteDialogPrimaryButton}
+          show={showDialog}
+          handleDialogBoxClose={() => setShowDialog(false)}
+          handleAgree={() => deleteSolutionNarrative()}
+        />
+        {/* {solutionNarrativeCount >= solutionNarrativelimit && ( */}
       </div>
+
       <div className={styles.solutionNarrativePaginationContainer}>
-        <Stack spacing={2}>
-          <Pagination
-            count={
-              parseInt(
-                (solutionNarrativeCount / solutionNarrativelimit).toString(),
-                10
-              ) + 1
-            }
-            shape="rounded"
-            onChange={(e, data) => handleGetSolutionNarrativeData(e, data)}
-          />
-        </Stack>
+        {solutionNarrativeCount > solutionNarrativelimit && (
+          <div className={styles.solutionNarrativePaginationContainer}>
+            <Stack spacing={2}>
+              <Pagination
+                count={Math.ceil(
+                  solutionNarrativeCount / solutionNarrativelimit
+                )}
+                shape="rounded"
+                onChange={(e, data) =>
+                  fetchSolutionNarrativeData(
+                    (data - 1) * solutionNarrativelimit
+                  )
+                }
+              />
+            </Stack>
+          </div>
+        )}
       </div>
+      {/* )} */}
       {loading === true && <Loader />}
+      {alert.showAlert && (
+        <SnackbarAlert
+          severity={alert.severity}
+          handler={() => {
+            setAlert((prevState: alert) => ({
+              ...prevState,
+              showAlert: false,
+            }));
+          }}
+          showalert={alert.showAlert}
+          message={alert.message}
+        />
+      )}
     </div>
   );
 };

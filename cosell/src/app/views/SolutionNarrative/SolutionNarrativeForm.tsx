@@ -33,6 +33,7 @@ import {
   errorMessageLabels,
 } from '../../../strings';
 import styles from './SolutionNarrative.module.css';
+import './SolutionNarratice.css';
 import { RenderErrorMessage, GenTextField } from '../../components/Form';
 import {
   saveSolutionNarrativeAction,
@@ -74,46 +75,41 @@ export const SolutionNarativeInitialValue: SolutionNarrativeValues = {
 const SolutionNarrativeForm = (props: any) => {
   const {
     solutionNarrativeId,
-    count,
-    limit,
-    offset,
-    setCount,
-    handleGetAssetData,
     cancelHandler,
-    fetchSolutionNarrativeData,
+    // fetchSolutionNarrativeData,
+    selectedSolNarrId,
+    setSelectedSolNarrId,
+    selectedSolNarrativeObj,
+    setSelectedSolNarrativeObj,
   } = props;
 
   const accessTypeList = [
     { key: 'Internal', id: 1, value: 'Internal' },
     { key: 'External', id: 2, value: 'External' },
   ];
-  const accessDocTypeList = [
-    { key: 'Video', id: 3, value: 'Video' },
-    { key: 'Image', id: 2, value: 'Image' },
-    { key: 'Pdf', id: 1, value: 'Pdf' },
-    { key: 'PowerPoint', id: 4, value: 'PowerPoint' },
-  ];
+
   const dispatch = useDispatch();
   const fileInput = useRef<HTMLInputElement>(null);
   const formikForm = useRef<FormikProps<SolutionNarrativeValues>>(null);
   const [initialValues, setInitialValues] = useState<SolutionNarrativeValues>();
   const [showAssetsTable, setShowAssetsTable] = useState(false);
   const [formValues, setFormValues] = useState<SolutionNarrativeValues>();
-  const [tableData, setTableData] = useState([]);
+  const [assetData, setAssetData] = useState([]);
+  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(5);
+  const [count, setCount] = useState(0);
   const [accessTypeMenu, setaccessTypeMenu] = useState(false);
   const [accessDocTypeMenu, setaccessDocTypeMenu] = useState(false);
   const [assetName, setAssetName] = useState('');
   const [accessType, setAccessType] = useState('');
   const [accessDocType, setAccessDocType] = useState('');
-  const [selected, setSelected] = useState(['']);
-  const [selectedAssetData, setSelectedAssetData] = useState([]);
   const [showGeneral, setShowGeneral] = useState(true);
   const [showAssets, setShowAssets] = useState(true);
   const [partnershipId, setPartnershipId] = useState('');
-  const [assetSelected, setAssetSelected] = useState(false);
-  const [selectedFile, setSelectedFile] = React.useState('');
-  const [selectedAssetIds, setSelectedAssetIds] = useState(['']);
   const [loading, setLoading] = useState(false);
+  // const [assetSelected, setAssetSelected] = useState(false);
+  // const [selectedFile, setSelectedFile] = React.useState('');
+  // const [selectedAssetIds, setSelectedAssetIds] = useState(['']);
   const [mappedSolutionNarrativeAssets, setMappedSolutionNarrativeAssets] =
     useState([]);
   const [alert, setAlert] = useState({
@@ -121,51 +117,47 @@ const SolutionNarrativeForm = (props: any) => {
     severity: '',
     message: '',
   });
-
+  const [accessDocTypeList, setDocTypeList] = useState([]);
   const solutionNarrativeStoreData = useSelector(
     selectSolutionNarrativeResponse
   );
+  const fetchFileTypeList = () => {
+    const token = localStorage.getItem('token');
+
+    getRequest(`partnership/asset/get-file-type-list/`, {
+      Authorization: `Token ${token}`,
+    }).then((response: any) => {
+      if (response.result === true) {
+        const typeList = response.data.map((li: any) => ({
+          key: li.name,
+          id: li.file_type_id,
+          value: li.name,
+        }));
+        setDocTypeList(typeList);
+      }
+    });
+  };
 
   useEffect(() => {
-    const queryparams = new URLSearchParams(window.location.search);
-    const partnershipID: string = queryparams.get('partner_ship_id') || '0';
-    setPartnershipId(partnershipID);
-    if (isCreateMode()) {
-      setInitialValues({
-        ...initialValues,
-        ...SolutionNarativeInitialValue,
-      });
-    } else {
-      getSolutionNarrativeInfo(solutionNarrativeId);
-      getSolutionNarrativeAssetInfo(partnershipID, solutionNarrativeId);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isCreateMode()) {
-      fetchAssetData();
-    }
-  }, [initialValues]);
-
-  useEffect(() => {
-    if (isCreateMode()) {
-      const allValues = {
-        ...formValues,
-        thumbnailImage: selectedFile,
-      };
-      props.sendFormValues(allValues);
-    } else {
-      props.sendFormValues(formValues);
-    }
+    // if (isCreateMode()) {
+    //   const allValues = {
+    //     ...formValues,
+    //     thumbnailImage: selectedFile,
+    //   };
+    //   props.sendFormValues(allValues);
+    // } else {
+    props.sendFormValues(formValues);
+    // }
   }, [formValues]);
 
-  const isCreateMode = () => {
-    return (
-      solutionNarrativeId === undefined ||
-      solutionNarrativeId === null ||
-      solutionNarrativeId === ''
-    );
+  const handleGetAssetData = (e: any, data: any) => {
+    setOffset((data - 1) * limit);
   };
+
+  const isCreateMode = () =>
+    solutionNarrativeId === undefined ||
+    solutionNarrativeId === null ||
+    solutionNarrativeId === '';
 
   const fetchAssetData = () => {
     const token = localStorage.getItem('token');
@@ -179,11 +171,12 @@ const SolutionNarrativeForm = (props: any) => {
       }
     ).then((response: any) => {
       if (response.result === true) {
-        dispatch(
-          setAssetInfo({
-            assetInfo: response.data,
-          })
-        );
+        // dispatch(
+        //   setAssetInfo({
+        //     assetInfo: response.data,
+        //   })
+        // );
+        setAssetData(response.data);
         if (response.count) {
           setCount(response.count);
         }
@@ -216,25 +209,96 @@ const SolutionNarrativeForm = (props: any) => {
   };
 
   const getSolutionNarrativeAssetInfo = (partnershipID, solutionNarrId) => {
+    setLoading(true);
     const token = localStorage.getItem('token');
     getRequest(
-      `partnership/solution-narrative/get-assets/?partnership_id=${partnershipID}&solution_narrative_id=${solutionNarrId}&offset=0&limit=${limit}`,
+      `partnership/solution-narrative/get-assets/?partnership_id=${partnershipID}&solution_narrative_id=${solutionNarrId}&offset=${offset}&limit=${limit}`,
       {
         Accept: 'application/json',
         Authorization: `Token ${token}`,
       }
     ).then((response: any) => {
       if (response.result === true) {
-        setMappedSolutionNarrativeAssets(response.data);
-        dispatch(
-          setAssetInfo({
-            assetInfo: response.data,
-          })
+        // setMappedSolutionNarrativeAssets(response.data);
+        // dispatch(
+        //   setAssetInfo({
+        //     assetInfo: response.data,
+        //   })
+        // );
+        const selectedSolNarrObj = response.data.filter(
+          (d: any) => d.is_selected === true
         );
+        const selectedObj = [
+          ...new Map(
+            [...selectedSolNarrativeObj, ...selectedSolNarrObj].map((item) => [
+              item.asset_id,
+              item,
+            ])
+          ).values(),
+        ];
+
+        const newSelectedObj = [...new Set(selectedObj)];
+        console.log(newSelectedObj, 'selected in form', selectedObj);
+        setSelectedSolNarrativeObj(newSelectedObj);
+
+        const idArr = selectedSolNarrObj.map((d: any) => d.asset_id);
+
+        setSelectedSolNarrId((prevState: any) => [
+          ...new Set([...prevState, ...idArr]),
+        ]);
+        setAssetData(response.data);
+        if (response.count) {
+          setCount(response.count);
+        }
         setShowAssetsTable(true);
       }
     });
+    setLoading(false);
   };
+  useEffect(() => {
+    const queryparams = new URLSearchParams(window.location.search);
+    const partnershipID: string = queryparams.get('partner_ship_id') || '0';
+    setPartnershipId(partnershipID);
+    if (isCreateMode()) {
+      setInitialValues({
+        ...initialValues,
+        ...SolutionNarativeInitialValue,
+      });
+    } else {
+      getSolutionNarrativeInfo(solutionNarrativeId);
+      getSolutionNarrativeAssetInfo(partnershipID, solutionNarrativeId);
+    }
+    fetchFileTypeList();
+    fetchAssetData();
+  }, []);
+
+  useEffect(() => {
+    if (isCreateMode()) {
+      fetchAssetData();
+    }
+  }, [initialValues]);
+
+  // useEffect(() => {
+  //   const queryparams = new URLSearchParams(window.location.search);
+  //   const partnershipID: string = queryparams.get('partner_ship_id') || '0';
+  //   setPartnershipId(partnershipID);
+  //   if (isCreateMode()) {
+  //     setInitialValues({
+  //       ...initialValues,
+  //       ...SolutionNarativeInitialValue,
+  //     });
+  //   } else {
+  //     getSolutionNarrativeInfo(solutionNarrativeId);
+  //     getSolutionNarrativeAssetInfo(partnershipID, solutionNarrativeId);
+  //   }
+  //   fetchFileTypeList();
+  // }, []);
+
+  useEffect(() => {
+    if (isCreateMode()) {
+      fetchAssetData();
+    }
+  }, [initialValues]);
 
   const onFileSelected = (event: any) => {
     const file = event.target.files[0];
@@ -293,26 +357,58 @@ const SolutionNarrativeForm = (props: any) => {
       accessDocType !== '' && accessDocTypeId !== ''
         ? `&file_type_id=${accessDocTypeId}`
         : '';
+    const solNarrId =
+      solutionNarrativeId === undefined ||
+      solutionNarrativeId === null ||
+      solutionNarrativeId === ''
+        ? ''
+        : `&solution_narrative_id=${solutionNarrativeId}`;
     const token = localStorage.getItem('token');
-    getRequest(
-      `partnership/asset/?partnership_id=${partnershipId}${nameSearch}${accessTypeSearch}${accessDocTypeSearch}&offset=${offset}&limit=${limit}`,
-      {
-        Authorization: `Token ${token}`,
-      }
-    ).then((response: any) => {
-      if (response.result === true) {
-        dispatch(
-          setAssetInfo({
-            assetInfo: response.data,
-          })
-        );
-        setCount(response.count);
-      }
-    });
+    if (isCreateMode()) {
+      getRequest(
+        `partnership/asset/?partnership_id=${partnershipId}${nameSearch}${accessTypeSearch}${accessDocTypeSearch}&offset=${offset}&limit=${limit}`,
+        {
+          Authorization: `Token ${token}`,
+        }
+      ).then((response: any) => {
+        if (response.result === true) {
+          setAssetData(response.data);
+          if (response.count) {
+            setCount(response.count);
+          }
+          console.log(response.count, 'counnt', response.data);
+        }
+      });
+    } else {
+      getRequest(
+        `partnership/solution-narrative/get-assets/?partnership_id=${partnershipId}${solNarrId}${nameSearch}${accessTypeSearch}${accessDocTypeSearch}&offset=${offset}&limit=${limit}`,
+        {
+          Authorization: `Token ${token}`,
+        }
+      ).then((response: any) => {
+        if (response.result === true) {
+          setAssetData(response.data);
+          if (response.count) {
+            setCount(response.count);
+          }
+          console.log(response.count, 'counnt');
+        }
+      });
+    }
   };
   useEffect(() => {
-    if (assetName === '' && accessDocType === '' && accessType === '') {
-      fetchAssetData();
+    const queryparams = new URLSearchParams(window.location.search);
+    const partnershipID: string = queryparams.get('partner_ship_id') || '0';
+    if (
+      (accessType === '' || accessType === 'All') &&
+      (accessDocType === '' || accessDocType === 'All') &&
+      assetName === ''
+    ) {
+      if (solutionNarrativeId) {
+        getSolutionNarrativeAssetInfo(partnershipID, solutionNarrativeId);
+      } else {
+        fetchAssetData();
+      }
     } else {
       handleSearch();
     }
@@ -341,11 +437,6 @@ const SolutionNarrativeForm = (props: any) => {
             const val: any = elementByClass[0].innerText.split('\n');
             val.pop();
             if (val.length > 0) {
-              const assetIds = solutionNarrativeStoreData.assetInfo
-                .filter((assetInfo) => assetInfo.is_selected === true)
-                .map((filteredAssetInfo) =>
-                  filteredAssetInfo.asset_id.toString()
-                );
               setLoading(true);
               dispatch(
                 saveSolutionNarrativeAction(
@@ -356,7 +447,7 @@ const SolutionNarrativeForm = (props: any) => {
                       ? values.thumbnailImageFile
                       : values.thumbnailImage,
                     tags: val,
-                    assetIds,
+                    assetIds: selectedSolNarrId,
                   },
                   solutionNarrativeId,
                   partnershipId,
@@ -369,11 +460,11 @@ const SolutionNarrativeForm = (props: any) => {
                       severity: value,
                     })),
                   cancelHandler,
-                  fetchSolutionNarrativeData
+                  () => props.refreshSolutionNarrativeInformation()
                 )
               );
             } else {
-              setFieldError('tags', 'Atleast one tag is required');
+              setFieldError('tags', 'One tag is required');
             }
           }}
         >
@@ -458,7 +549,7 @@ const SolutionNarrativeForm = (props: any) => {
                             {SolutionNarrativeLabels.description}
                           </div>
                           <div
-                            className={`${styles.semiDiv} ${styles.txtField}`}
+                            className={`${styles.semiDiv} ${styles.txtField}  ${styles.textArea}`}
                           >
                             <Field
                               type="text"
@@ -473,6 +564,7 @@ const SolutionNarrativeForm = (props: any) => {
                               }
                               errorMessage={errors.description}
                               component={GenTextField}
+                              multiline
                             />
                             <RenderErrorMessage name="description" />
                           </div>
@@ -487,20 +579,21 @@ const SolutionNarrativeForm = (props: any) => {
                           <div className={styles.semiDiv}>
                             {SolutionNarrativeLabels.thumbnailImage}
                           </div>
-                          <div className={styles.semiDiv}>
+                          <div className={`${styles.semiDiv} disabledFile`}>
                             <Field
                               type="file"
                               name="thumbnailImage"
                               value={values.thumbnailImage}
-                              onChange={handleChange}
-                              onBlur={handleBlur}
+                              // onChange={handleChange}
+                              // onBlur={handleBlur}
+                              disabled
                               placeholder={
                                 SolutionNarrativeLabels.thumbnailImage
                               }
-                              hasError={
-                                errors.thumbnailImage && touched.thumbnailImage
-                              }
-                              errorMessage={errors.thumbnailImage}
+                              // hasError={
+                              //   errors.thumbnailImage && touched.thumbnailImage
+                              // }
+                              // errorMessage={errors.thumbnailImage}
                               component={GenTextField}
                               InputProps={{
                                 endAdornment: (
@@ -586,9 +679,11 @@ const SolutionNarrativeForm = (props: any) => {
                               onClick={() => handleAddAssetButtonClick()}
                               style={{ minWidth: '160px' }}
                             >
-                              {assetSelected
+                              {/* {assetSelected
                                 ? ButtonLabels.add
-                                : ButtonLabels.addAsset}
+                                :  */}
+                              {ButtonLabels.addAsset}
+                              {/* } */}
                             </PrimaryButton>
                           </div>
                         )}
@@ -721,21 +816,22 @@ const SolutionNarrativeForm = (props: any) => {
                                           <em>All</em>
                                         </MenuItem>
 
-                                        {accessDocTypeList.map((list: any) => (
-                                          <MenuItem
-                                            value={list.value}
-                                            key={list.id}
-                                            onClick={() => {
-                                              handleFilter(
-                                                'accDocType',
-                                                list.value
-                                              );
-                                              setaccessDocTypeMenu(false);
-                                            }}
-                                          >
-                                            {list.value}
-                                          </MenuItem>
-                                        ))}
+                                        {accessDocTypeList &&
+                                          accessDocTypeList.map((list: any) => (
+                                            <MenuItem
+                                              value={list.value}
+                                              key={list.id}
+                                              onClick={() => {
+                                                handleFilter(
+                                                  'accDocType',
+                                                  list.value
+                                                );
+                                                setaccessDocTypeMenu(false);
+                                              }}
+                                            >
+                                              {list.value}
+                                            </MenuItem>
+                                          ))}
                                       </>
                                     )}
                                   </div>
@@ -744,7 +840,10 @@ const SolutionNarrativeForm = (props: any) => {
                               <div>
                                 <Button
                                   className={styles.searchSide}
-                                  onClick={() => handleSearch()}
+                                  onClick={() => {
+                                    setOffset(0);
+                                    handleSearch();
+                                  }}
                                 >
                                   <img src={searchIcon} alt="" />
                                 </Button>
@@ -752,17 +851,25 @@ const SolutionNarrativeForm = (props: any) => {
                             </div>
 
                             <div style={{ width: '100%' }}>
-                              <AssetTable />
+                              <AssetTable
+                                selectedSolNarrId={selectedSolNarrId}
+                                setSelectedSolNarrId={setSelectedSolNarrId}
+                                selectedSolNarrativeObj={
+                                  selectedSolNarrativeObj
+                                }
+                                setSelectedSolNarrativeObj={
+                                  setSelectedSolNarrativeObj
+                                }
+                                assetData={assetData}
+                              />
                             </div>
-                            {count >= limit && (
+                            {count > limit && (
                               <Stack
                                 spacing={2}
                                 className={styles.paginationWrap}
                               >
                                 <Pagination
-                                  count={
-                                    parseInt((count / limit).toString(), 10) + 1
-                                  }
+                                  count={Math.ceil(count / limit)}
                                   shape="rounded"
                                   onChange={(e, data) =>
                                     handleGetAssetData(e, data)
@@ -781,21 +888,17 @@ const SolutionNarrativeForm = (props: any) => {
                       {SolutionNarrativeLabels.noAssetsMessage}
                     </div>
                   )}
-                  {showGeneral && (
-                    <div className={styles.saveButtonContainer}>
-                      <SecondaryButton
-                        style={{ marginRight: '30px', minWidth: '160px' }}
-                      >
-                        {ButtonLabels.cancel}
-                      </SecondaryButton>
-                      <PrimaryButton
-                        type="submit"
-                        style={{ minWidth: '160px' }}
-                      >
-                        {ButtonLabels.save}
-                      </PrimaryButton>
-                    </div>
-                  )}
+                  <div className={styles.saveButtonContainer}>
+                    <SecondaryButton
+                      style={{ marginRight: '30px', minWidth: '160px' }}
+                      onClick={() => cancelHandler()}
+                    >
+                      {ButtonLabels.cancel}
+                    </SecondaryButton>
+                    <PrimaryButton type="submit" style={{ minWidth: '160px' }}>
+                      {ButtonLabels.save}
+                    </PrimaryButton>
+                  </div>
                 </div>
               </Form>
             );

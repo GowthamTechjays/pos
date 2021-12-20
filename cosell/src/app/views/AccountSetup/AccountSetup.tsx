@@ -5,7 +5,7 @@
 /* eslint-disable react/jsx-curly-newline */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable linebreak-style */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { getRequest } from 'src/app/service';
@@ -19,6 +19,7 @@ import tickIcon from '../../assets/green_tick.svg';
 import { AccountSetupLabels } from '../../../strings';
 import './accountSetup.css';
 import PrimaryButton from '../../components/Button/PrimaryButton';
+import Loader from 'src/app/components/Loader';
 
 const AccountSetup = () => {
   const accountSetupContents = [
@@ -63,24 +64,12 @@ const AccountSetup = () => {
   const history = useHistory();
   const queryparams = new URLSearchParams(window.location.search);
   const partnershipId: string = queryparams.get('partner_ship_id') || '0';
-  // const [uploadAssetEnabled, setUploadAssetEnabled] = React.useState(false);
-  const [activeStep, setActiveStep] = React.useState('Create partnership');
+  const [activeStep, setActiveStep] = useState('Create partnership');
+  const [loading, setLoading] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
+    setLoading(true);
     const isUploadEnabled = queryparams.get('uploadAsset') || 'false';
-
-    // switch (queryPair[0]) {
-    //   case 'uploadAsset':
-    //     setActiveStep('Upload assets');
-    //     break;
-    //   case 'createSolNarrative':
-    //     setActiveStep('Create solution narrative');
-    //     break;
-    //   default:
-    //     return setActiveStep('Create partnership');
-    //     break;
-    // }
-
     const token = localStorage.getItem('token');
     getRequest(`partnership/?partnership_id=${partnershipId}`, {
       Accept: 'application/json',
@@ -88,17 +77,20 @@ const AccountSetup = () => {
       Authorization: `Token ${token}`,
     }).then((resp: any) => {
       if (resp.result === true) {
-        if (resp.data.is_solution_narrative_available === true) {
-          setActiveStep('Create sales hub');
+        if (resp.data.is_sales_hub_available === true) {
+          setActiveStep(AccountSetupLabels.createABMCampaignButtonLabel);
+        } else if (resp.data.is_solution_narrative_available === true) {
+          setActiveStep(AccountSetupLabels.configureSalesHubButtonLabel);
         } else if (resp.data.is_asset_available === true) {
-          setActiveStep('Create solution narrative');
+          setActiveStep(AccountSetupLabels.createSolutionNarrativeButtonLabel);
         } else if (
           resp.data.partner_company_information !== null &&
           resp.data.company_information !== null
         ) {
-          setActiveStep('Upload assets');
+          setActiveStep(AccountSetupLabels.uploadAssetsButtonLabel);
         }
       }
+      setLoading(false);
     });
   }, []);
   const handleSetUpAccount = (stepName: string) => {
@@ -110,6 +102,12 @@ const AccountSetup = () => {
         history.push(
           `/uploadAsset?partner_ship_id=${partnershipId}&assetModal=${true}`
         );
+        break;
+      case 'Create solution narrative':
+        history.push(`/solutionNarrative?partner_ship_id=${partnershipId}`);
+        break;
+      case 'Create sales hub':
+        history.push(`/salesHub?partner_ship_id=${partnershipId}`);
         break;
       default:
         return '';
@@ -172,14 +170,12 @@ const AccountSetup = () => {
           </div>
         </div>
       ))}
+      {loading && <Loader />}
     </div>
   );
 };
 AccountSetup.propTypes = {
   user: PropTypes.shape({}),
-  // onLogin: PropTypes.func.isRequired,
-  // onLogout: PropTypes.func.isRequired,
-  // onCreateAccount: PropTypes.func.isRequired,
 };
 
 AccountSetup.defaultProps = {

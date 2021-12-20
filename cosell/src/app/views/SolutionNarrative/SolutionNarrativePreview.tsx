@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable indent */
 /* eslint-disable operator-linebreak */
 /* eslint-disable comma-dangle */
@@ -19,7 +20,7 @@ interface SolutionNarrativeValues {
   tags: string[];
 }
 const SolutionNarrativePreview = (props: any) => {
-  const { formValues, solutionNarrativeId } = props;
+  const { formValues, solutionNarrativeId, selectedSolNarrativeObj } = props;
 
   const [thumbnailImage, setThumbnailImage] = useState<string>();
   const solutionNarrativeStoreData = useSelector(
@@ -30,7 +31,7 @@ const SolutionNarrativePreview = (props: any) => {
     console.log(solutionNarrativeStoreData);
   }, [solutionNarrativeStoreData]);
 
-  console.log(solutionNarrativeStoreData);
+  console.log(selectedSolNarrativeObj, 'selectedSolNarrativeObj in preview');
 
   useEffect(() => {
     if (solutionNarrativeId) {
@@ -88,29 +89,22 @@ const SolutionNarrativePreview = (props: any) => {
           </div>
         </div>
       </div>
-      {solutionNarrativeStoreData.assetInfo.length > 0
-        ? solutionNarrativeStoreData.assetInfo.map((asset: any) => {
-            console.log(asset);
-            if (asset.is_selected === true) {
-              return (
-                <div
-                  id={asset.asset_id}
-                  className={styles.imageAndAssetsMainContainer}
-                >
-                  <div className={styles.imageAndAssetsContentContainer}>
-                    <img
-                      className={styles.pfdImage}
-                      src={getDocIcon('PDF')}
-                      alt="img"
-                    />
-                    <div className={styles.pdfTitle}>{asset.asset_name}</div>
-                  </div>
-                </div>
-              );
-            }
-            return '';
-          })
-        : ''}
+      {selectedSolNarrativeObj.length > 0 &&
+        selectedSolNarrativeObj.map((asset: any) => (
+          <div
+            id={asset.asset_id}
+            className={styles.imageAndAssetsMainContainer}
+          >
+            <div className={styles.imageAndAssetsContentContainer}>
+              <img
+                className={styles.pfdImage}
+                src={getDocIcon(asset.file_type)}
+                alt="img"
+              />
+              <div className={styles.pdfTitle}>{asset.asset_name}</div>
+            </div>
+          </div>
+        ))}
     </div>
   );
 };

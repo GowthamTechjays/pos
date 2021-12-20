@@ -18,9 +18,11 @@ import VerifyEmail from './app/views/VerifyEmail';
 import SignUp from './app/views/SignUp';
 import Profile from './app/views/Profile/Profile';
 import PreviewPartnership from './app/views/PreviewPartnership';
+import SalesHub from './app/views/SalesHub';
 import PageNotFound from './app/views/PageNotFound';
 import SolutionNarrative from './app/views/SolutionNarrative';
 import UploadAssets from './app/views/UploadAssets';
+import MailVerification from './app/views/MailVerification';
 
 const Routes = () => (
   <Switch>
@@ -42,6 +44,12 @@ const Routes = () => (
       exact
       layout={MinimalLayout}
       path="/verifyMail"
+    />
+    <RouteWithLayout
+      component={MailVerification}
+      exact
+      layout={MinimalLayout}
+      path="/emailVerification"
     />
     <RouteWithLayout
       component={SignUp}
@@ -73,7 +81,12 @@ const Routes = () => (
       layout={MainLayout}
       path="/accountSetup"
     />
-
+    <RouteWithLayout
+      component={SalesHub}
+      exact
+      layout={MainLayout}
+      path="/salesHub"
+    />
     <RouteWithLayout
       component={CreatePartnership}
       exact

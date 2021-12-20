@@ -17,11 +17,13 @@ import pdfIcon from '../../../../assets/pdf_mini_icon.svg';
 import pptIcon from '../../../../assets/ppt_mini_icon.svg';
 import imageIcon from '../../../../assets/img_mini_icon.svg';
 import videoIcon from '../../../../assets/video_mini_icon.svg';
+import othersIcon from '../../../../assets/others_mini.svg';
+import wordIcon from '../../../../assets/word_mini_svg.svg';
 import styles from '../../UploadAssets.module.css';
 
 const AssetTable = (props: any) => {
   const {
-    tableData,
+    tableData = [],
     selected,
     handleSelectAllClick,
     handleCheckboxClick,
@@ -33,6 +35,9 @@ const AssetTable = (props: any) => {
       case 'Pdf':
         src = pdfIcon;
         break;
+      case 'Word':
+        src = wordIcon;
+        break;
       case 'Powerpoint':
         src = pptIcon;
         break;
@@ -42,8 +47,11 @@ const AssetTable = (props: any) => {
       case 'Image':
         src = imageIcon;
         break;
+      case 'Others':
+        src = othersIcon;
+        break;
       default:
-        src = pdfIcon;
+        src = othersIcon;
     }
     return src;
   };
@@ -94,9 +102,10 @@ const AssetTable = (props: any) => {
             <StyledTableCell>{uploadAssetsLabels.tags}</StyledTableCell>
           </TableRow>
         </TableHead>
-        <TableBody>
-          {tableData.length > 0 &&
-            tableData.map((row: any) => (
+        {console.log(tableData, 'tableData')}
+        {tableData.length > 0 && (
+          <TableBody>
+            {tableData.map((row: any) => (
               <StyledTableRow
                 key={row.id}
                 onClick={() => handleUpdateAsset(row.id)}
@@ -135,8 +144,14 @@ const AssetTable = (props: any) => {
                 </StyledTableCell>
               </StyledTableRow>
             ))}
-        </TableBody>
+          </TableBody>
+        )}
       </Table>
+      {(tableData.length === 0 ||
+        tableData === undefined ||
+        tableData === false) && (
+        <div className={styles.noRecord}>{uploadAssetsLabels.noRecords}</div>
+      )}
     </TableContainer>
   );
 };
