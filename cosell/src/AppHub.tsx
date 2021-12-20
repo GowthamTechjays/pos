@@ -10,7 +10,7 @@ function AppHub() {
     return (
         <BrowserRouter>
             <Switch>
-                <Route path="/">
+                <Route exact path="/">
                     <Home />
                 </Route>
                 <Route exact path="/dashboard">
