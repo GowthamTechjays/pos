@@ -9,7 +9,7 @@ import SalesHubRoutes from './SalesHubRoutes';
 const browserHistory = createBrowserHistory();
 const theme = createTheme();
 
-function SalesHubSite() {
+function SalesRep() {
   return (
     <ThemeProvider theme={theme}>
       <Router history={browserHistory}>
@@ -19,4 +19,4 @@ function SalesHubSite() {
   );
 }
 
-export default SalesHubSite;
+export default SalesRep;

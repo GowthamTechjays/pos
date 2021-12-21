@@ -13,7 +13,7 @@ import VerifyEmail from './app/views/VerifyEmail';
 import SignUp from './app/views/SignUp';
 import PageNotFound from './app/views/PageNotFound';
 import SignIn from './app/views/SignIn';
-import { useHistory } from "react-router-dom";
+import SalesHubSite from './app/views/SalesHubSite';
 
 const SalesHubRoutes = () => (
   <Switch>
@@ -30,8 +30,7 @@ const SalesHubRoutes = () => (
       layout={MinimalLayout}
       path="/signUp"
     />
-    <RouteWithLayout component={Hub} exact layout={MinimalLayout} path="/" />
-    <RouteWithLayout component={Test} exact layout={MinimalLayout} path="/testing" />
+    <RouteWithLayout component={SignIn} exact layout={MinimalLayout} path="/" />
 
     <RouteWithLayout
       component={PageNotFound}
@@ -40,27 +39,15 @@ const SalesHubRoutes = () => (
       path="*"
     />
 
+    <RouteWithLayout
+      component={SalesHubSite}
+      exact
+      layout={BlankLayout}
+      path="/saleSite"
+    />
+
     <Redirect to="/not-found" />
   </Switch>
 );
-
-function Hub() {
-  const history = useHistory();
-  const routeChange = () => {
-    history.push('testing');
-  }
-  return (
-    <div>
-      <h1>HUB</h1>
-      <button onClick={routeChange}>Button</button>
-    </div>)
-}
-
-function Test() {
-  return (
-    <div>
-      <h1>Testing</h1>
-    </div>)
-}
 
 export default SalesHubRoutes;

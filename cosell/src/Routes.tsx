@@ -23,6 +23,7 @@ import PageNotFound from './app/views/PageNotFound';
 import SolutionNarrative from './app/views/SolutionNarrative';
 import UploadAssets from './app/views/UploadAssets';
 import MailVerification from './app/views/MailVerification';
+import SalesHubSite from './app/views/SalesHubSite';
 
 const Routes = () => (
   <Switch>
@@ -105,6 +106,13 @@ const Routes = () => (
       exact
       layout={MainLayout}
       path="/uploadAsset"
+    />
+
+    <RouteWithLayout
+      component={SalesHubSite}
+      exact
+      layout={BlankLayout}
+      path="/saleHubSite"
     />
 
     <RouteWithLayout

@@ -1,6 +1,7 @@
+/* eslint-disable comma-dangle */
 import React, { useState, useEffect } from 'react';
 import App from './App';
-import SalesHubSite from './SalesHubSite';
+import SalesRep from './SalesRep';
 
 const Redirect = () => {
   const [url, setUrl] = useState(true);
@@ -8,12 +9,17 @@ const Redirect = () => {
     const text = window.location.href;
     const textSplit = text.split('.');
     // if (textSplit[0] === 'http://localhost:3000/') {
-    if (textSplit.includes('https://portal')) {
+    if (text.includes('http://localhost:3000/')) {
       setUrl(true);
     } else {
       setUrl(false);
     }
-    console.log(textSplit[0], url);
+    console.log(
+      textSplit[0],
+      text.includes('http://localhost:3000/'),
+      url,
+      'url'
+    );
   }, [url]);
   return (
     <div>
@@ -21,7 +27,7 @@ const Redirect = () => {
         <App />
       ) : (
         <>
-          <SalesHubSite />
+          <SalesRep />
         </>
       )}
     </div>
