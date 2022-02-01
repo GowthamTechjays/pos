@@ -7,7 +7,7 @@ const PORT = 8001;
 //    res.send("working")
 // })
 
-app.use(express.static(path.join(__dirname, "cosell", "dist")))
+app.use(express.static(path.join(__dirname, "cosell", "dist")));
 
 app.get('*', (req,res) =>{
     res.sendFile(path.join(__dirname, "cosell", "dist", "index.html"));
