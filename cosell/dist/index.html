@@ -6,7 +6,7 @@
       id="favicon"
       rel="icon"
       type="image/svg+xml"
-      href="/assets/FaviconSymbio.36ab19c7.svg"
+      href="/assets/FaviconSymbio.82ea3b20.svg"
     />
     <link
       rel="stylesheet"
@@ -23,7 +23,7 @@
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title id="favtitle">Symbio</title>
-    <script type="module" crossorigin src="/assets/index.148e56a4.js"></script>
+    <script type="module" crossorigin src="/assets/index.a7ce9c0b.js"></script>
     <link rel="modulepreload" href="/assets/vendor.958c143d.js">
     <link rel="stylesheet" href="/assets/index.50faf541.css">
   </head>
@@ -34,6 +34,7 @@
     <script>
       function favIcon() {
         console.log('favIcon', localStorage.getItem('favIcon'));
+        console.log('favIcon', typeof localStorage.getItem('title'));
         if (localStorage.getItem('favIcon') !== null) {
           var link =
             document.querySelector("link[rel*='icon']") ||
@@ -43,7 +44,7 @@
           link.href = localStorage.getItem('favIcon');
           document.getElementsByTagName('head')[0].appendChild(link);
         }
-        if (localStorage.getItem('title') !== null) {
+        if (localStorage.getItem('title') != 'undefined') {
           const favTitle = document.getElementById('favtitle');
           favTitle.innerHTML = localStorage.getItem('title');
         }
